@@ -1,0 +1,468 @@
+# Deliberation Room deliberation-trace schema
+#
+# Status:
+#   Provisional research schema.
+#
+# Purpose:
+#   Represent meaningful cognitive and interactional events
+#   without requiring preservation of a complete raw transcript.
+#
+# The trace records development, not merely turn order.
+#
+# Important:
+#   A system move that elicits a human insight does not make
+#   the resulting insight system-originated.
+#
+#   A system proposal that is merely acknowledged does not
+#   automatically become human-owned understanding.
+
+schema_version: "0.1"
+
+deliberation_trace:
+
+  trace_id: null
+  session_id: null
+  task_id: null
+
+  task:
+    goal: null
+    domain: null
+    artifact_type: null
+    stakes: unknown
+
+  events:
+
+    - event_id: null
+
+      timestamp: null
+
+      actor: null
+      # human | system | joint | external
+
+      event_type: null
+      # Examples:
+      # human_claim
+      # human_question
+      # human_distinction
+      # human_assumption
+      # human_warrant
+      # human_evidence
+      # human_counterexample
+      # human_revision
+      # human_rejection
+      # human_uncertainty
+      # human_recognition
+      #
+      # system_question
+      # system_proposal
+      # system_challenge
+      # system_counterexample
+      # system_reflection
+      # system_reframe
+      # system_assumption_surface
+      #
+      # joint_distinction
+      # joint_revision
+      #
+      # composition_transition
+      # semantic_drift
+      # return_to_deliberation
+
+      content:
+        text: null
+        structured_representation: null
+
+      targets: []
+      # IDs of claims, assumptions, distinctions,
+      # questions, or prior events affected by this event.
+
+      triggered_by: []
+      # Prior event IDs that materially prompted this event.
+
+      cognitive_function: null
+
+      epistemic_status: null
+      # observed
+      # inferred
+      # hypothesized
+      # human_confirmed
+      # unresolved
+      # contradicted
+      # external_evidence_required
+
+      conceptual_provenance:
+
+        classification: null
+        # human_originated
+        # system_proposed_human_recognized
+        # system_proposed_human_revised
+        # system_proposed_human_rejected
+        # jointly_developed
+        # system_supplied_human_uptake_unresolved
+        # external_source
+        # unknown
+
+        confidence: null
+
+        rationale: []
+
+      linguistic_provenance:
+
+        classification: null
+        # human_preserved
+        # human_edited
+        # system_transposed
+        # system_generated
+        # jointly_refined
+        # unknown
+
+        confidence: null
+
+      human_response:
+
+        response_type: null
+        # recognition
+        # rejection
+        # revision
+        # qualification
+        # application
+        # counterexample
+        # elaboration
+        # uncertainty
+        # no_substantive_uptake
+
+        substantive: null
+
+      state_change:
+
+        claims_added: []
+        claims_removed: []
+        claims_revised: []
+
+        distinctions_added: []
+        distinctions_revised: []
+
+        assumptions_added: []
+        assumptions_removed: []
+
+        warrants_added: []
+        warrants_revised: []
+
+        evidence_added: []
+
+        contradictions_added: []
+        contradictions_resolved: []
+
+        uncertainties_added: []
+        uncertainties_resolved: []
+        uncertainties_retained: []
+
+      policy_metadata:
+
+        selected_move: null
+
+        candidate_moves: []
+
+        rationale: []
+
+        expected_cognitive_value: null
+        expected_information_gain: null
+
+        cognitive_substitution_risk: null
+        intrusion_cost: null
+        interactional_risk: null
+
+      interactional_effect:
+
+        response_latitude: null
+        disclosure_pressure: null
+        face_effect: null
+        belonging_effect: null
+
+      correction:
+
+        corrected_by_human: false
+        correction_event_id: null
+        correction_type: null
+
+  questions:
+
+    - question_id: null
+
+      introduced_by: null
+
+      question: null
+
+      purpose: null
+
+      resolution_status: unresolved
+
+      resolution_type: null
+      # human_resolved
+      # system_resolved
+      # jointly_resolved
+      # unresolved
+      # human_rejected_premise
+      # external_evidence_required
+
+      resolution_events: []
+
+      substantive_resolver: null
+
+      confidence: null
+
+  claims:
+
+    - claim_id: null
+
+      current_representation: null
+
+      status: active
+
+      first_event: null
+
+      conceptual_provenance:
+        classification: null
+        confidence: null
+
+      development_history: []
+
+      supporting_evidence: []
+
+      conflicting_evidence: []
+
+      tested_by: []
+
+      revisions: []
+
+      stability:
+        status: unknown
+        confidence: null
+
+      uncertainty: []
+
+  distinctions:
+
+    - distinction_id: null
+
+      representation:
+        left: null
+        right: null
+        relation: null
+
+      first_event: null
+
+      conceptual_provenance:
+        classification: null
+        confidence: null
+
+      tested_by: []
+
+      revisions: []
+
+      status: active
+
+  system_proposals:
+
+    - proposal_id: null
+
+      event_id: null
+
+      content: null
+
+      target: null
+
+      human_uptake:
+        status: unresolved
+        # recognized
+        # revised
+        # rejected
+        # unresolved
+
+        evidence_events: []
+
+      incorporated_into_stable_state: false
+
+  human_rejections:
+
+    - rejection_id: null
+
+      event_id: null
+
+      rejected_target: null
+
+      target_source: null
+      # system_proposal
+      # system_inference
+      # wording
+      # framing
+      # question_premise
+      # metacognitive_inference
+
+      rejection_reason: null
+
+      information_revealed: []
+
+      models_updated: []
+
+  revisions:
+
+    - revision_id: null
+
+      event_id: null
+
+      revised_target: null
+
+      previous_representation: null
+      revised_representation: null
+
+      trigger_events: []
+
+      revision_source: null
+      # human_generated
+      # system_proposed_human_revised
+      # jointly_developed
+
+      substantive: null
+
+  unresolved_uncertainty:
+
+    - uncertainty_id: null
+
+      representation: null
+
+      source: null
+
+      status: unresolved
+
+      resolvability: null
+      # further_deliberation
+      # external_evidence
+      # another_person
+      # future_event
+      # fundamentally_uncertain
+
+      intentionally_retained: false
+
+  stabilized_judgments:
+
+    - judgment_id: null
+
+      representation: null
+
+      source_claims: []
+
+      source_distinctions: []
+
+      supporting_events: []
+
+      conceptual_provenance:
+        classification: null
+        confidence: null
+
+      stability_basis: []
+
+      remaining_uncertainty: []
+
+  composition:
+
+    transition_event: null
+
+    human_requested: false
+
+    semantic_invariants: []
+
+    artifact_units:
+
+      - artifact_unit_id: null
+
+        content: null
+
+        source_judgments: []
+
+        source_events: []
+
+        conceptual_provenance:
+          classification: null
+          confidence: null
+
+        linguistic_provenance:
+          classification: null
+          confidence: null
+
+        semantic_relation_to_source: null
+        # direct_preservation
+        # descriptive_synonymy
+        # paraphrase
+        # entailment
+        # narrowing
+        # expansion
+        # reframe
+        # semantic_drift
+        # new_claim
+        # unknown
+
+        drift_check:
+          status: unknown
+          flags: []
+
+  metacognitive_summary:
+
+    status: provisional
+
+    observations: []
+
+    productive_move_patterns: []
+
+    revision_patterns: []
+
+    evidence_patterns: []
+
+    uncertainty_patterns: []
+
+    human_originated_events:
+      claims: null
+      distinctions: null
+      warrants: null
+      counterexamples: null
+
+    system_proposals:
+      recognized: null
+      revised: null
+      rejected: null
+      unresolved: null
+
+    question_resolution:
+      human_resolved: null
+      system_resolved: null
+      jointly_resolved: null
+      unresolved: null
+
+    composition_contribution:
+      conceptual: null
+      linguistic: null
+
+    generalization_limits: []
+
+    human_corrections: []
+
+  privacy:
+
+    raw_transcript_required: false
+
+    retained_event_types: []
+
+    excluded_content: []
+
+    persistence_scope: null
+    # ephemeral
+    # session
+    # task
+    # artifact_linked
+    # user_selected
+
+    contains_sensitive_inferences: unknown
+
+    user_review_available: null
+    user_correction_available: null
+    user_deletion_available: null
