@@ -2,6 +2,10 @@
 
 **A cognition-preserving interaction architecture for AI systems.**
 
+> **Status:** Research specification / conceptual architecture.  
+> No validated implementation or empirical results yet.  
+> Schemas, state representations, and policy mechanisms are provisional and intended to be tested.
+
 Most conversational AI systems implicitly optimize a problem resembling:
 
 > **What should the model say next?**
