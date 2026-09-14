@@ -45,7 +45,14 @@ from extractor import (
     ManualStateExtractor,
     apply_extraction,
 )
-
+from composition import (
+    ArtifactType,
+    AudienceModel,
+    CompositionPlanner,
+    LinguisticProfile,
+    Register,
+    RhetoricalTransposer,
+)
 
 def prompt_nonempty(label: str) -> str:
     """Prompt until the user enters non-empty text."""
@@ -648,12 +655,95 @@ def run_deliberation() -> None:
 
         print(realized.text)
 
-        if (
-            selected.action
-            == Action.TRANSITION_TO_COMPOSITION
-        ):
-            state.deliberation_complete = True
+       if (
+    selected.action
+    == Action.TRANSITION_TO_COMPOSITION
+):
+    print("\n=== Composition Handoff ===")
+
+    print("\nWhat are you making?")
+    print("1. Message / text")
+    print("2. Email")
+    print("3. Essay")
+    print("4. Discussion post")
+    print("5. Memo")
+    print("6. Feedback")
+    print("7. Speech")
+    print("8. Explanation")
+    print("9. Other")
+
+    artifact_options = {
+        "1": ArtifactType.MESSAGE,
+        "2": ArtifactType.EMAIL,
+        "3": ArtifactType.ESSAY,
+        "4": ArtifactType.DISCUSSION_POST,
+        "5": ArtifactType.MEMO,
+        "6": ArtifactType.FEEDBACK,
+        "7": ArtifactType.SPEECH,
+        "8": ArtifactType.EXPLANATION,
+        "9": ArtifactType.OTHER,
+    }
+
+    while True:
+        artifact_choice = input("Choose 1-9: ").strip()
+
+        if artifact_choice in artifact_options:
+            artifact_type = artifact_options[artifact_choice]
             break
+
+        print("Please choose a number from 1 to 9.")
+
+    purpose = prompt_nonempty(
+        "\nWhat does this need to accomplish?\n> "
+    )
+
+    audience_description = prompt_nonempty(
+        "\nWho is this for?\n> "
+    )
+
+    relationship = input(
+        "\nWhat's your relationship to them? "
+        "(optional — press Enter to skip)\n> "
+    ).strip()
+
+    role = input(
+        "\nWhat role do they occupy here? "
+        "(optional — press Enter to skip)\n> "
+    ).strip()
+
+    audience = AudienceModel(
+        description=audience_description,
+        role=role or None,
+        relationship=relationship or None,
+    )
+
+    linguistic_profile = LinguisticProfile(
+        register=Register.CONVERSATIONAL,
+    )
+
+    planner = CompositionPlanner()
+    transposer = RhetoricalTransposer()
+
+    contract = planner.build_contract(
+        state=state,
+        artifact_type=artifact_type,
+        purpose=purpose,
+        audience=audience,
+        linguistic_profile=linguistic_profile,
+    )
+
+    result = transposer.compose(contract)
+
+    print("\n=== Draft ===\n")
+    print(result.text)
+
+    if result.drift_flags:
+        print("\n=== Drift Flags ===")
+        for flag in result.drift_flags:
+            print(f"- {flag}")
+
+    state.deliberation_complete = True
+    break
 
         if yes_no(
             "\nDo you want the system to compose instead of continuing?"
