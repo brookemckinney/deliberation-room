@@ -1,1182 +1,2154 @@
-# Deliberation Room interaction-state schema
-#
-# Status:
-#   Provisional research schema.
-#
-# Purpose:
-#   Represent the minimum structured state needed to support
-#   cognition-preserving next-move selection and situated
-#   rhetorical compilation.
-#
-# Important:
-#   This schema does not imply that all fields should be populated,
-#   persisted, or inferred in every interaction.
-#
-#   Representations should remain:
-#   - task-relevant
-#   - uncertainty-aware
-#   - corrigible
-#   - minimally sufficient
-#   - provenance-preserving
-#
-#   Unknown should remain unknown.
-
-schema_version: "0.3"
-
-interaction_state:
-
-  session:
-    id: null
-    task_id: null
-    timestamp: null
-
-  goal:
-    description: null
-    source: null
-    confidence: null
-    status: active
-
-
-  # ============================================================
-  # MODEL 1 — COGNITIVE STATE
-  #
-  # What does the human currently appear to think?
-  # ============================================================
-
-  cognitive_state:
-
-    observations: []
-
-    claims: []
-
-    assumptions: []
+# Evidence and Retrieval Layer
 
-    warrants: []
-
-    evidence:
-      supporting: []
-      conflicting: []
-      unresolved: []
-
-    distinctions: []
-
-    contradictions: []
-
-    counterexamples: []
-
-    alternatives: []
-
-    unresolved_questions: []
-
-    uncertainty: []
-
-    conceptual_stability:
-      status: unknown
-      confidence: null
-      rationale: []
-      tested_against: []
+The Evidence and Retrieval Layer supplies external and historical information to both engines of Deliberation Room.
 
+Its purpose is not to maximize how much information the system knows about a person.
 
-  # ============================================================
-  # MODEL 2 — METACOGNITIVE PROCESS
-  #
-  # How is productive cognitive movement occurring RIGHT NOW?
-  #
-  # This is live controller state.
-  # It is not a fixed cognitive type, personality classification,
-  # or learning-style profile.
-  # ============================================================
+Its purpose is to answer:
 
-  metacognitive_process_model:
+> **What evidence is actually necessary to improve the next cognitive move or the final rhetorical realization, and how trustworthy, current, relevant, and interactionally appropriate is that evidence?**
 
-    current_operations:
+The layer may draw from:
 
-      - operation: null
-        # Examples:
-        # compare
-        # contrast
-        # analogize
-        # instantiate
-        # abstract
-        # classify
-        # generate_example
-        # generate_counterexample
-        # test_counterfactual
-        # identify_assumption
-        # construct_warrant
-        # evaluate_evidence
-        # isolate_variable
-        # trace_causal_chain
-        # shift_perspective
-        # identify_invariant
-        # synthesize
-        # revise
-        # reject
-        # stabilize_judgment
+```text
+CURRENT HUMAN INTERACTION
 
-        status: possible
-        # possible
-        # active
-        # productive
-        # stalled
-        # completed
+USER-PROVIDED SPEECH / TEXT
 
-        evidence_events: []
+TASK HISTORY
 
-        confidence: null
+RELATIONSHIP-SPECIFIC HISTORY
 
-        human_confirmed: false
+REASONING HISTORY
 
-    operation_evidence:
+DOMAIN-SPECIFIC KNOWLEDGE
 
-      - operation: null
+DISCIPLINARY / GENRE CONVENTIONS
 
-        attempts: 0
+LINGUISTIC / SOCIOLINGUISTIC EVIDENCE
 
-        productive_state_changes: 0
+MODEL PRIOR KNOWLEDGE
 
-        low_value_responses: 0
+OPTIONAL RETRIEVAL / WEB RESEARCH
 
-        current_support: unknown
-        # low
-        # moderate
-        # high
-        # unknown
+EXTERNAL PRIMARY SOURCES
+```
 
-        evidence_events: []
+These sources are not equivalent.
 
-        confidence: null
+The architecture should preserve where evidence came from, what kind of claim it supports, and how strongly it should influence system behavior.
 
-    current_cognitive_needs:
+---
 
-      - need: null
-        # Examples:
-        # expose_assumption
-        # test_claim
-        # construct_warrant
-        # localize_uncertainty
-        # identify_invariant
-        # instantiate_abstraction
-        # abstract_from_examples
-        # compare_explanations
-        # incorporate_perspective
-        # evaluate_evidence
-        # stabilize_judgment
+# 1. Why an Evidence Layer Exists
 
-        priority: null
+A large language model already contains substantial prior knowledge about:
 
-        evidence_events: []
+- language;
+- genre;
+- rhetoric;
+- discourse;
+- common idioms;
+- cultural references;
+- disciplinary terminology;
+- conversational norms;
+- writing conventions;
+- and broad patterns of human interaction.
 
-        confidence: null
+A retrieval-capable system may additionally access:
 
-    intervention_response:
+- current public information;
+- academic research;
+- institutional policies;
+- primary sources;
+- professional conventions;
+- contemporary discourse;
+- current slang;
+- technical documentation;
+- and audience-relevant public context.
 
-      productive_moves: []
+A personalized system may also have access to:
 
-      low_value_moves: []
+- the human's current language;
+- previously supplied writing;
+- corrections;
+- relationship-specific vocabulary;
+- prior reasoning traces;
+- and selected persistent state.
 
-      recent_pattern: null
+The architectural problem is therefore not:
 
-      diminishing_returns: []
+```text
+HOW CAN THE SYSTEM GET MORE INFORMATION?
+```
 
-    abstraction_state:
+It is:
 
-      current_level: unknown
-      # concrete
-      # mixed
-      # abstract
-      # unknown
+```text
+WHICH INFORMATION SHOULD MATTER?
 
-      current_tolerance: unknown
-      # low
-      # moderate
-      # high
-      # unknown
+FOR WHAT PURPOSE?
 
-      evidence_events: []
+WITH WHAT CONFIDENCE?
 
-      confidence: null
+FOR HOW LONG?
 
-    revision_state:
+AND SHOULD IT AFFECT:
 
-      recent_revision_types: []
+UNDERSTANDING?
 
-      rejected_system_framings: []
+NEXT-MOVE SELECTION?
 
-      accepted_system_framings: []
+RESEARCH SUPPORT?
 
-      human_modified_system_framings: []
+OR FINAL LANGUAGE?
+```
 
-    uncertainty_state:
+---
 
-      localized: false
+# 2. Evidence Is Function-Specific
 
-      productive_uncertainty: []
+The same evidence may be useful for one function and inappropriate for another.
 
-      blocking_uncertainty: []
+For example:
 
-    current_control_signal:
+```text
+Evidence:
+A discourse community commonly uses the term "bro" affiliatively.
 
-      preferred_operations: []
+Useful for:
+interpreting the user's language.
 
-      deprioritized_operations: []
+Not sufficient for:
+authorizing the system to say "bro" to the user.
+```
 
-      exploration_candidates: []
+Likewise:
 
-      substitution_risk: null
+```text
+Evidence:
+A recipient recently experienced a public professional setback.
 
-      controller_instruction: null
-      # Example:
-      #
-      # "Counterfactual testing has recently produced useful
-      # revision. Change one variable. Do not supply the likely
-      # distinction. Ask what remains invariant."
+Useful for:
+avoiding an insensitive interaction.
 
-    task_context:
+Not necessarily appropriate for:
+mentioning the setback in the final utterance.
+```
 
-      domain: null
+Therefore every evidence object should be evaluated separately for:
 
-      disciplinary_walking_rules: []
+```text
+INTERPRETATION USE
 
-    model_status:
+METACOGNITIVE CONTROL USE
 
-      confidence: null
+RHETORICAL PLANNING USE
 
-      last_updated_from_event: null
+LINGUISTIC REALIZATION USE
 
-      human_corrections: []
+EXPLICIT DISCLOSURE USE
+```
 
+These permissions should not be assumed to be identical.
 
-  # ============================================================
-  # REASONING HISTORY
-  #
-  # Prior task-bounded evidence that MAY inform Model 2.
-  #
-  # This is deliberately separate from the live metacognitive
-  # process model.
-  #
-  # Current-task evidence should generally outweigh older patterns.
-  # Historical observations should not become fixed cognitive types.
-  # ============================================================
+---
 
-  reasoning_history:
+# 3. Evidence Hierarchy
 
-    domain_expertise: []
+Deliberation Room should generally privilege evidence according to relevance and specificity rather than according to a single universal ranking.
 
-    prior_knowledge: []
+However, a useful default ordering is:
 
-    observations:
+```text
+1. CURRENT HUMAN CONTRIBUTION
 
-      - observation: null
+2. HUMAN CORRECTION / REJECTION
 
-        operation: null
+3. CURRENT-TASK BEHAVIOR
 
-        context: null
+4. USER-PROVIDED RELEVANT SPEECH OR TEXT
 
-        domain: null
+5. RELATIONSHIP- OR DOMAIN-SPECIFIC HISTORY
 
-        source_tasks: []
+6. PREVIOUSLY OBSERVED TASK-BOUNDED PATTERNS
 
-        evidence_events: []
+7. VERIFIED DOMAIN / GENRE / INSTITUTIONAL EVIDENCE
 
-        confidence: null
+8. CURRENT EXTERNAL PRIMARY SOURCES
 
-        scope: null
-        # task
-        # domain
-        # cross_domain
+9. CURRENT HIGH-QUALITY SECONDARY SOURCES
 
-        human_confirmed: false
+10. BASE-MODEL GENERAL KNOWLEDGE
 
-        still_supported: null
+11. BROAD DISCOURSE-COMMUNITY OR COHORT PRIORS
 
-    transfer_candidates: []
+12. DEMOGRAPHIC GENERALIZATION
+```
 
-    contradicted_patterns: []
+The lower the evidence is on this list, the more cautiously it should generally be used to characterize a specific person.
 
-    decay_or_expiration_notes: []
+This is not an absolute ordering.
 
-    human_corrections: []
+For factual questions, a current primary source may outrank a user's memory.
 
+For idiolect, the user's actual speech should outrank a style guide.
 
-  # ============================================================
-  # MODEL 3 — LINGUISTIC / SOCIOLINGUISTIC
-  #
-  # How does meaning operate for this human in this discourse
-  # environment?
-  #
-  # This is NOT a generic tone or style profile.
-  #
-  # The model may combine:
-  #
-  # - observed speech/text behavior
-  # - idiolect
-  # - local semantics
-  # - register
-  # - stance
-  # - pragmatics
-  # - discourse-community conventions
-  # - role language
-  # - humor and irony
-  # - code-switching
-  # - generational/cohort evidence
-  # - relational language history
-  #
-  # Critical distinction:
-  #
-  # UNDERSTAND A FORM
-  # does not imply
-  # HAVE PERMISSION TO PERFORM A FORM.
-  # ============================================================
+For disciplinary writing conventions, a field-specific source may be more relevant than general personal language history.
 
-  linguistic_sociolinguistic_model:
+The controller should rank evidence according to the **claim being made**.
 
-    observed_language_evidence:
+---
 
-      # References to relevant speech/text evidence.
-      #
-      # An implementation should not automatically retain raw
-      # language indefinitely. Where possible, abstracted features
-      # may be stored with provenance back to source evidence.
+# 4. Person-Specific Evidence Should Override Broad Priors
 
-      samples: []
+Suppose a broad sociolinguistic prior suggests:
 
-      lexical_patterns:
+```text
+members of group X often use linguistic feature Y
+```
 
-        frequent_terms: []
+but the person's actual language repeatedly shows:
 
-        preferred_terms: []
+```text
+feature Y is absent
+```
 
-        avoided_terms: []
+The person-specific evidence should dominate.
 
-        jargon_or_domain_terms: []
+Conceptually:
 
-        recurring_phrases: []
+```text
+OBSERVED PERSON-SPECIFIC EVIDENCE
+        >
+BROAD POPULATION PRIOR
+```
 
-        local_shorthand: []
+when the question concerns the behavior of that person.
 
-        lexical_density:
-          tendency: null
-          confidence: null
+Broad priors may generate hypotheses.
 
-        lexical_specificity:
-          tendency: null
-          confidence: null
+They should not overwrite direct evidence.
 
-      syntactic_patterns:
+---
 
-        sentence_length:
-          tendency: null
-          confidence: null
+# 5. Current-Task Evidence Should Usually Override Historical Personalization
 
-        clause_density:
-          tendency: null
-          confidence: null
+Suppose reasoning history suggests:
 
-        fragmentation:
-          tendency: null
-          confidence: null
+```text
+analogies were productive in previous tasks
+```
 
-        coordination_vs_subordination:
-          tendency: null
-          confidence: null
+but the present interaction shows:
 
-        question_forms: []
+```text
+analogies are currently producing confusion
 
-        imperative_forms: []
+counterexamples are producing useful revision
+```
 
-        declarative_patterns: []
+The Metacognitive Controller should prefer the present evidence.
 
-        parenthetical_structure: []
+Historical personalization is a prediction source.
 
-        syntactic_compression_patterns: []
+It is not destiny.
 
-      cadence_patterns:
+---
 
-        rhythm_notes: []
+# 6. Evidence Object
 
-        compression_patterns: []
+A future implementation may represent evidence conceptually as:
 
-        elaboration_patterns: []
+```yaml
+evidence_id: null
 
-        pause_or_break_patterns: []
+content: null
 
-        emphasis_patterns: []
+source_type: null
+# current_interaction
+# human_correction
+# user_provided_language
+# reasoning_history
+# relational_history
+# domain_source
+# primary_source
+# secondary_source
+# model_prior
+# discourse_prior
+# cohort_prior
 
-        repetition_patterns: []
+source_reference: null
 
-        acceleration_patterns: []
+claim_supported: null
 
-        sentence_sequence_patterns: []
+function:
+  - interpretation
 
-      orthographic_patterns:
+scope:
+  task: null
+  domain: null
+  relationship: null
+  discourse_community: null
+  temporal: null
 
-        capitalization: []
+freshness:
+  retrieved_at: null
+  source_date: null
+  freshness_required: null
 
-        punctuation: []
+confidence: null
 
-        emoji_use: []
+specificity: null
 
-        parenthetical_use: []
+human_confirmed: false
 
-        dash_use: []
+contradicted_by: []
 
-        ellipsis_use: []
+permissions:
+  interpretation: true
+  metacognitive_control: false
+  rhetorical_planning: false
+  linguistic_realization: false
+  explicit_disclosure: false
 
-        line_break_patterns: []
+persistence:
+  allowed: null
+  scope: null
+```
 
-        emphasis_marking: []
+The precise implementation is open.
 
-        quotation_patterns: []
+The architectural principle is that evidence should carry enough metadata to prevent:
 
-      discourse_markers:
+```text
+SOMETHING THE SYSTEM KNOWS
+```
 
-        openings: []
+from silently becoming:
 
-        transitions: []
+```text
+SOMETHING THE SYSTEM SHOULD SAY
+```
 
-        softeners: []
+---
 
-        intensifiers: []
+# 7. Source Types
 
-        repair_markers: []
+## Current Interaction
 
-        stance_markers: []
+The strongest evidence about:
 
-        agreement_markers: []
+- current meaning;
+- current uncertainty;
+- current rhetorical purpose;
+- current cognitive movement;
+- and current language use
 
-        disagreement_markers: []
+often comes from the interaction happening now.
 
-        topic_shift_markers: []
+Examples include:
 
-        closings: []
+```text
+what the human just said
+what they rejected
+what they revised
+which distinction they generated
+which wording they corrected
+which prompt produced movement
+```
 
-      explicitness_patterns:
+This evidence should be highly weighted but still interpreted cautiously.
 
-        directness:
-          tendency: null
-          confidence: null
+---
 
-        implication_vs_explication:
-          tendency: null
-          confidence: null
+## Human Correction
 
-        compression:
-          tendency: null
-          confidence: null
+Human correction is especially high-value evidence.
 
-        contextual_reliance:
-          tendency: null
-          confidence: null
+Examples:
 
-        redundancy_tolerance:
-          tendency: null
-          confidence: null
+> "No, that's not what I mean."
 
-      rhetorical_behavior:
+> "The idea is right, but that phrase sounds nothing like me."
 
-        preferred_argument_sequences: []
+> "That's too formal for David."
 
-        preferred_explanation_sequences: []
+> "I'm not angry. I'm trying to tell her I love her."
 
-        common_compression_moves: []
+Correction may update:
 
-        common_expansion_moves: []
+```text
+cognitive state
+metacognitive process state
+linguistic model
+interaction model
+composition contract
+```
 
-        analogy_patterns: []
+The architecture should treat correction as evidence, not friction.
 
-        contrast_patterns: []
+---
 
-        narrative_patterns: []
+# 8. User-Provided Speech and Text
 
-        qualification_patterns: []
+The human may supply:
 
-      repair_behavior:
+- texts;
+- emails;
+- essays;
+- transcripts;
+- posts;
+- recordings converted to text;
+- prior messages;
+- professional writing;
+- academic writing;
+- or other language samples.
 
-        self_corrections: []
+These may support empirical modeling of:
 
-        rejected_wording_patterns: []
+```text
+lexicon
+syntax
+cadence
+punctuation
+directness
+compression
+humor
+stance
+repair
+genre switching
+idiolect
+```
 
-        semantic_narrowing: []
+But the architecture should consider:
 
-        semantic_strengthening: []
+```text
+WHO WAS THE AUDIENCE?
 
-        clarification_patterns: []
+WHAT WAS THE GENRE?
 
-        "not_x_but_y"_patterns: []
+WHEN WAS IT WRITTEN?
 
-        prior_successful_repairs: []
+WAS THE TEXT EDITED BY SOMEONE ELSE?
 
+IS THIS REPRESENTATIVE OF THE CURRENT TASK?
+```
 
-    idiolect_model:
+A dissertation chapter should not automatically determine how the human texts their sister.
 
-      recurring_features: []
+---
 
-      stable_features: []
+# 9. Contextualized Language Evidence
 
-      context_sensitive_features: []
+Observed language should therefore be stored or represented with context.
 
-      low_confidence_features: []
+Conceptually:
 
-      contradicted_features: []
+```yaml
+language_sample:
 
-      evidence_events: []
+  source: user_provided
 
-      scope:
+  medium: text_message
 
-        task: []
+  audience_relationship: close_friend
 
-        domain: []
+  task: interpersonal_support
 
-        relationship: []
+  date: null
 
-        discourse_community: []
+  observed_features:
+    - compressed syntax
+    - affectionate teasing
+    - high contextual reliance
+    - emoji use
 
-        cross_context: []
+  confidence:
+    representative_of_context: high
+    transferable_to_professional_email: low
+```
 
-      model_status:
+The architecture should avoid a single universal:
 
-        confidence: null
+```text
+USER STYLE
+```
 
-        human_confirmed: false
+when the evidence supports multiple context-sensitive styles.
 
-        last_updated_from_event: null
+---
 
+# 10. Relationship-Specific Evidence
 
-    local_semantics:
+Some linguistic and interactional evidence is local to one relationship.
 
-      vocabulary:
+Examples include:
 
-        - form: null
+```text
+shared jokes
+nicknames
+callbacks
+repeated metaphors
+terms of affection
+established teasing
+ways of repairing conflict
+shared conceptual shorthand
+```
 
-          local_meaning: null
+This evidence can be extraordinarily valuable for rhetorical compilation.
 
-          literal_or_general_meaning: null
+But it should usually remain scoped to that relationship.
 
-          pragmatic_function: null
+For example:
 
-          source_events: []
+```text
+"San Diego"
+```
 
-          confidence: null
+may have rich relational meaning between two specific people.
 
-          scope: null
-          # task
-          # relationship
-          # discourse_community
-          # domain
+It should not become a general user style feature.
 
-      semantic_distinctions: []
+---
 
-      shared_conceptual_shorthand: []
+# 11. Reasoning History
 
-      relational_shorthand: []
+Reasoning History supplies prior evidence to the Metacognitive Controller.
 
-      recurring_metaphors: []
+Possible observations include:
 
-      internally_defined_terms: []
+```text
+single-variable counterfactuals produced revision
 
-      semantic_drift_risks: []
+analogy was useful during conceptual exploration
 
+direct explanation produced low information gain
 
-    register:
+classification was productive in technical tasks
 
-      current: null
+concrete examples helped when abstraction stalled
+```
 
-      candidate_registers: []
+These observations should preserve:
 
-      evidence_events: []
+```text
+task
+domain
+evidence
+confidence
+scope
+recency
+human corrections
+```
 
-      confidence: null
+A mature implementation may decay confidence when observations become old or repeatedly contradicted.
 
-      shift_conditions: []
+---
 
-      role_dependencies: []
+# 12. Base-Model Knowledge
 
-      audience_dependencies: []
+The underlying model may already know substantial information about:
 
-      medium_dependencies: []
+```text
+grammar
+idiom
+rhetoric
+genres
+common discourse norms
+disciplinary language
+argument structures
+cultural references
+communication practices
+```
 
+This knowledge can be useful without retrieval.
 
-    stance:
+However, model knowledge has limitations:
 
-      current: []
+```text
+it may be stale
 
-      candidate_stances: []
+it may reflect broad averages
 
-      evidence_events: []
+it may contain stereotypes
 
-      confidence: null
+it may hallucinate conventions
 
-      dimensions:
+it may not distinguish current from historical norms
 
-        certainty: null
+it may not reflect the user's actual discourse environment
+```
 
-        alignment: null
+Therefore base-model knowledge should usually function as:
 
-        affect: null
+```text
+A PRIOR
+```
 
-        authority: null
+rather than:
 
-        distance: null
+```text
+PERSON-SPECIFIC FACT
+```
 
-        evaluation: null
+unless corroborated.
 
-        commitment: null
+---
 
-        vulnerability: null
+# 13. Model Priors Should Generate Hypotheses, Not Identities
 
+The system may know, for example, that a particular humor form is currently common in a discourse community.
 
-    pragmatic_patterns:
+That may justify:
 
-      implicature_patterns: []
+```text
+candidate interpretation:
+this utterance may be playful
+```
 
-      presupposition_patterns: []
+It does not justify:
 
-      indirectness_patterns: []
+```text
+this user definitely communicates through that humor style
+```
 
-      politeness_patterns: []
+Likewise, cultural or generational knowledge may help explain a phrase.
 
-      mitigation_patterns: []
+It should not become a covert demographic personality model.
 
-      intensification_patterns: []
+---
 
-      deixis_patterns: []
+# 14. External Retrieval
 
-      framing_patterns: []
+Retrieval may be used when the task depends on information that should not be trusted to model memory alone.
 
-      repair_patterns: []
+Possible retrieval targets include:
 
-      speech_act_patterns: []
+```text
+current facts
+recent events
+institutional policy
+legal requirements
+technical documentation
+disciplinary conventions
+academic literature
+genre examples
+public audience context
+current terminology
+current discourse
+```
 
-      invitation_patterns: []
+Retrieval should be triggered by need.
 
-      refusal_patterns: []
+It should not run merely because the system has the ability to search.
 
-      request_patterns: []
+---
 
-      boundary_patterns: []
+# 15. Retrieval Gate
 
-      affiliation_patterns: []
+Before retrieval, the system should ask:
 
-      distancing_patterns: []
+```text
+Would external evidence materially change:
 
+1. factual accuracy?
 
-    discourse_communities:
+2. cognitive support?
 
-      - community: null
+3. rhetorical credibility?
 
-        evidence: []
+4. genre fit?
 
-        confidence: null
+5. audience fit?
 
-        relevant_conventions: []
+6. linguistic interpretation?
 
-        terminology: []
+7. final wording?
+```
 
-        humor_norms: []
+If the answer is no, retrieval may be unnecessary.
 
-        evidence_norms: []
+Possible retrieval decisions include:
 
-        directness_norms: []
+```text
+NO RETRIEVAL
 
-        status_norms: []
+VERIFY ONE FACT
 
-        marked_forms: []
+RETRIEVE ONE PRIMARY SOURCE
 
-        rhetorical_expectations: []
+CHECK CURRENT TERMINOLOGY
 
-        epistemic_expectations: []
+CHECK GENRE CONVENTION
 
-        scope: null
+CHECK CURRENT PUBLIC CONTEXT
 
+CHECK DISCIPLINARY EVIDENCE
 
-    professional_or_community_language:
+BROAD RESEARCH REQUIRED
+```
 
-      terminology: []
+---
 
-      rhetorical_conventions: []
+# 16. Retrieval Should Be Query-Bounded
 
-      epistemic_conventions: []
+The system should retrieve for a specific unresolved need.
 
-      insider_language: []
+Bad:
 
-      outsider_risk: []
+```text
+SEARCH EVERYTHING ABOUT DAVID
+```
 
-      jargon_density_expectation: null
+Better:
 
-      citation_or_evidence_expectation: []
+```text
+VERIFY:
+whether this technical term is standard in current dialogue-system research
+```
 
-      typical_argument_forms: []
+Bad:
 
+```text
+RESEARCH TINA
+```
 
-    role_language:
+Better:
 
-      speaker_role: null
+```text
+NO RETRIEVAL:
+relationship-specific language history already answers the rhetorical problem
+```
 
-      audience_role: null
+This reduces:
 
-      expected_forms: []
+```text
+privacy exposure
+research visibility
+irrelevant context
+surveillance cues
+cognitive overload
+```
 
-      marked_forms: []
+---
 
-      prohibited_or_high_risk_forms: []
+# 17. Retrieval Can Feed Engine 1
 
-      authority_signals: []
+External information may improve deliberation without supplying the judgment.
 
-      affiliation_signals: []
+For example:
 
-      evaluation_signals: []
+```text
+HUMAN:
+"I think this policy started after 2020."
 
-      deference_signals: []
+SYSTEM:
+retrieves actual policy chronology
 
-      peer_positioning_signals: []
+SYSTEM:
+provides verified dates
 
-      role_distance_signals: []
+HUMAN:
+revises causal interpretation
+```
 
+The system supplied information.
 
-    humor_model:
+The human performed the judgment.
 
-      observed_forms: []
+Conceptually:
 
-      candidate_forms: []
+```text
+EXTERNAL EVIDENCE
+        ↓
+HUMAN COGNITION
+        ↓
+HUMAN JUDGMENT
+```
 
-      successful_forms: []
+This is compatible with cognition preservation.
 
-      failed_forms: []
+---
 
-      context_dependencies: []
+# 18. Retrieval Can Feed Engine 2
 
-      audience_dependencies: []
+External evidence may also support rhetorical compilation.
 
-      role_dependencies: []
+For example:
 
-      face_risk: null
+```text
+human judgment:
+the architecture may overlap with dialogue-state tracking
 
-      current_permission: unknown
-      # allowed
-      # conditional
-      # unsupported
-      # prohibited
-      # unknown
+retrieval:
+find current primary literature
 
-      confidence: null
+compiler:
+phrase novelty claim cautiously and accurately
+```
 
+The final text might say:
 
-    irony_model:
+> The architecture overlaps with established work in dialogue-state tracking and mixed-initiative interaction, while proposing a different optimization target centered on human cognitive continuation.
 
-      observed_patterns: []
+The factual support came from external evidence.
 
-      candidate_interpretations: []
+The interpretive position remains separately attributable.
 
-      likely_interpretation: null
+---
 
-      audience_legibility: null
+# 19. External Evidence Should Not Silently Become Human Belief
 
-      current_permission: unknown
+Suppose the system retrieves:
 
-      confidence: null
+```text
+Research source:
+X is associated with Y.
+```
 
+The final artifact should not automatically state:
 
-    code_switching:
+```text
+I believe X causes Y.
+```
 
-      observed_patterns: []
+unless the human has adopted that judgment.
 
-      trigger_contexts: []
+The architecture should preserve:
 
-      audience_dependencies: []
+```text
+EXTERNAL SOURCE CLAIM
 
-      role_dependencies: []
+HUMAN INTERPRETATION
 
-      discourse_community_dependencies: []
+FINAL RHETORICAL USE
+```
 
-      function_hypotheses: []
+as distinguishable objects.
 
-      confidence: null
+---
 
+# 20. Writing and Genre Conventions
 
-    generational_or_cohort_norms:
+The evidence layer may supply information about writing conventions.
 
-      # Broad cohort evidence may help generate hypotheses.
-      #
-      # It should not override stronger person-specific evidence.
+Examples include:
 
-      candidate_norms: []
+```text
+academic argument
+literature essay
+scientific report
+technical documentation
+professional memo
+grant abstract
+discussion post
+email
+text message
+public statement
+performance feedback
+```
 
-      evidence_basis: []
+Genre knowledge may come from:
 
-      confidence: null
+```text
+base-model knowledge
+institutional examples
+style guides
+disciplinary sources
+user-provided exemplars
+retrieval
+```
 
-      person_specific_override: []
+The compiler should distinguish:
 
-      stereotype_risk: []
+```text
+GENERAL GENRE CONVENTION
+```
 
+from:
 
-    relational_language_history:
+```text
+LOCAL INSTITUTIONAL EXPECTATION
+```
 
-      shared_vocabulary: []
+and:
 
-      callbacks: []
+```text
+THIS HUMAN'S ACTUAL PRACTICE
+```
 
-      nicknames_or_address_forms: []
+---
 
-      recurring_metaphors: []
+# 21. Genre Convention Is Not Genre Conformity
 
-      established_humor: []
+The compiler should know conventions without blindly reproducing them.
 
-      intimacy_markers: []
+For example:
 
-      distancing_markers: []
+```text
+conventional academic writing:
+high nominalization
 
-      prior_successful_realizations: []
+human / task need:
+clarity and direct argument
+```
 
-      prior_failed_realizations: []
+The system may deliberately depart from convention when doing so better serves the rhetorical purpose and does not violate task requirements.
 
-      prior_semantic_repairs: []
+Knowledge of convention expands available choice.
 
-      repair_history: []
+It should not eliminate judgment.
 
-      permission_changes: []
+---
 
+# 22. Linguistic and Sociolinguistic Retrieval
 
-    interactional_language_permissions:
+Retrieval may sometimes be useful for understanding contemporary language.
 
-      # A form can be understood perfectly while remaining inappropriate
-      # for the system or speaker to perform.
+Possible questions include:
 
-      - form_or_feature: null
+```text
+Is this phrase currently idiomatic?
 
-        comprehension_supported: null
+What does this meme/reference mean?
 
-        production_permission: unknown
-        # allowed
-        # conditional
-        # unsupported
-        # prohibited
-        # unknown
+How is this term used in this professional community?
 
-        evidence_events: []
+Is this phrase marked or potentially offensive?
 
-        context_constraints: []
+Has the pragmatic meaning of this expression shifted?
 
-        role_constraints: []
+What humor style is common in this discourse environment?
+```
 
-        audience_constraints: []
+Sources may include:
 
-        relationship_constraints: []
+```text
+corpora
+language references
+community discourse
+current public examples
+academic sociolinguistic work
+domain-specific sources
+```
 
-        confidence: null
+This evidence should remain lower-confidence for person-specific behavior than direct evidence from the individual.
 
+---
 
-    sociolinguistic_inference:
+# 23. Cultural Knowledge
 
-      observed: []
+Cultural knowledge can affect meaning.
 
-      inferred: []
+Examples include:
 
-      hypothesized: []
+```text
+reference
+ritual
+metaphor
+humor
+politeness
+indirectness
+honorific
+taboo
+genre
+social role
+```
 
-      human_confirmed: []
+But culture should not be treated as deterministic.
 
-      human_rejected: []
+The system should prefer:
 
-      uncertainty: []
+```text
+"This form can function as X in this context."
+```
 
-      stereotype_risk_flags: []
+over:
 
-      identity_inference_avoided: []
+```text
+"People from this culture communicate this way."
+```
 
+The latter is usually too broad to support person-specific inference.
 
-    semantic_uncertainty: []
+---
 
+# 24. Idiom
 
-    realization_constraints:
+Idiomatic language deserves explicit modeling because literal semantics may badly misrepresent interactional meaning.
 
-      preserve: []
+For example:
 
-      avoid: []
+```text
+"I'm dead."
+```
 
-      preferred_features: []
+may index:
 
-      dispreferred_features: []
+```text
+amusement
+disbelief
+exaggeration
+social alignment
+```
 
-      prohibited_mimicry: []
+rather than mortality.
 
-      audience_fit_constraints: []
+The evidence layer may use:
 
-      speaker_authenticity_constraints: []
+```text
+base-model language knowledge
+local conversation context
+discourse-community evidence
+relationship-specific history
+current retrieval
+```
 
-      role_constraints: []
+to infer likely meaning.
 
-      power_constraints: []
+Meaning should remain uncertainty-aware when multiple readings remain plausible.
 
-      medium_constraints: []
+---
 
+# 25. Humor Evidence
 
-    model_status:
+Humor interpretation may draw from:
 
-      confidence: null
+```text
+lexical form
+timing
+relationship
+prior successful humor
+discourse community
+generation/cohort evidence
+shared reference
+prosody if available
+```
 
-      last_updated_from_event: null
+The system should distinguish:
 
-      human_corrections: []
+```text
+THIS IS PROBABLY A JOKE
+```
 
+from:
 
-  # ============================================================
-  # MODEL 4 — INTERACTION
-  #
-  # What does a communicative move DO here, between these
-  # participants, for this purpose?
-  # ============================================================
+```text
+I SHOULD MAKE THE SAME KIND OF JOKE
+```
 
-  interaction_model:
+Understanding and production permission remain separate.
 
-    participants: []
+---
 
-    roles: []
+# 26. Speech Data
 
-    institutional_roles: []
+Where speech data is available, the architecture may eventually model more than text transcription.
 
-    power_relations: []
+Possible signals include:
 
-    status_relations: []
+```text
+pause duration
+speech rate
+prosodic emphasis
+pitch movement
+hesitation
+repair
+overlap
+laughter
+turn length
+rhythmic pattern
+```
 
-    familiarity:
-      level: unknown
-      confidence: null
+These may contribute to:
 
-    relational_distance:
-      level: unknown
-      confidence: null
+```text
+stance interpretation
+uncertainty
+emphasis
+humor interpretation
+interactional timing
+```
 
-    relationship_history: []
+But speech-derived psychological inference should remain tightly bounded.
 
-    trust_signals: []
+For example:
 
-    face_considerations: []
+```text
+observed:
+long pause before correction
+```
 
-    belonging_considerations: []
+does not independently establish:
 
-    audience: []
+```text
+user is anxious
+```
 
-    setting: null
+The architecture should preserve the distinction between behavioral evidence and psychological interpretation.
 
-    stakes:
-      level: unknown
-      dimensions: []
+---
 
-    topic_sensitivity: []
+# 27. Writing Data
 
-    disclosure_risk:
-      level: unknown
-      factors: []
+Written-language evidence may include:
 
-    disclosure_pressure:
-      level: unknown
-      factors: []
+```text
+lexical frequency
+sentence length
+syntactic complexity
+punctuation
+paragraph length
+discourse markers
+hedging
+intensification
+quotation behavior
+capitalization
+emoji
+line breaks
+revision patterns
+```
 
-    interactional_permissions: []
+The purpose is not forensic identification.
 
-    interactional_obligations: []
+The purpose is contextualized rhetorical fit.
 
-    response_latitude:
-      level: unknown
-      rationale: []
+---
 
-    asymmetry_of_consequence: []
+# 28. Current Language Trends
 
-    asymmetry_of_knowledge: []
+Some linguistic conventions change quickly.
 
-    evaluation_risk: []
+Examples include:
 
-    vulnerability_factors: []
+```text
+slang
+meme language
+platform conventions
+emoji pragmatics
+professional terminology
+AI terminology
+online humor
+```
 
-    ability_to_disengage:
-      level: unknown
-      constraints: []
+Where currency materially affects interpretation or output, retrieval may be preferable to static model priors.
 
+Freshness should be represented explicitly.
 
-  # ============================================================
-  # EPISTEMIC STATUS
-  #
-  # Keep observations, inferences, hypotheses, confirmations,
-  # contradictions, and unknowns distinguishable.
-  # ============================================================
+---
 
-  epistemic_status:
+# 29. Freshness
 
-    observed: []
+Evidence may have different temporal requirements.
 
-    inferred: []
+Examples:
 
-    hypothesized: []
+```text
+classical rhetorical concept:
+low freshness requirement
 
-    user_confirmed: []
+institutional policy:
+high freshness requirement
 
-    contradicted: []
+current slang:
+high freshness requirement
 
-    unknown: []
+relationship-specific nickname:
+freshness depends on relationship history
 
+academic theory:
+medium freshness requirement depending on claim
+```
 
-  # ============================================================
-  # PROVENANCE
-  #
-  # Conceptual, metacognitive, and linguistic contribution are
-  # distinct.
-  # ============================================================
+The system should not apply the same freshness standard to all evidence.
 
-  provenance:
+---
 
-    conceptual_events: []
+# 30. Evidence Conflict
 
-    metacognitive_events: []
+Evidence sources may disagree.
 
-    linguistic_events: []
+Example:
 
-    external_sources: []
+```text
+user's historical writing:
+highly formal
 
+current interaction:
+casual and compressed
 
-  # ============================================================
-  # CURRENT POLICY STATE
-  #
-  # The policy selects:
-  #
-  # 1. what cognitive operation should remain with the human;
-  # 2. what system move can create conditions for that operation;
-  # 3. how that move should be linguistically realized.
-  # ============================================================
+task:
+text to close friend
+```
 
-  current_policy_state:
+The system should not average these mechanically.
 
-    candidate_moves: []
+It should reason about scope.
 
-    target_cognitive_operation: null
+Possible resolution:
 
-    metacognitive_control_instruction: null
-    # Example:
-    #
-    # "Use one counterfactual. Change only one variable.
-    # Do not name the distinction. Ask what remains invariant."
+```text
+historical formal writing:
+valid for professional domain
 
-    selected_move:
-      action: null
-      rationale: null
+current interaction:
+stronger evidence for present casual interaction
 
-      expected_cognitive_value: null
-      expected_information_gain: null
+relationship history:
+supports compressed informal realization
+```
 
-      expected_productive_state_change: []
+---
 
-      disciplinary_validity: null
+# 31. Contradictory External Sources
 
-      agency_preservation: null
-      response_latitude: null
-      correctability: null
+External sources may also conflict.
 
-      cognitive_substitution_risk: null
-      intrusion_cost: null
-      disclosure_pressure: null
-      interactional_risk: null
-      premature_certainty_risk: null
+The system should preserve:
 
-    joint_move:
-      cognitive_function: null
-      linguistic_realization: null
-      interactional_affordance: []
+```text
+source disagreement
+source quality
+source date
+scope
+method
+```
 
+rather than flattening conflict into one confident answer.
 
-  # ============================================================
-  # COMPOSITION STATE
-  #
-  # Deliberation and composition are separate architectural phases.
-  #
-  # Once the relevant judgment is sufficiently stable, or the
-  # human explicitly requests composition, Engine 2 may perform
-  # substantial rhetorical and linguistic work.
-  # ============================================================
+This is especially important when external evidence enters human reasoning.
 
-  composition_state:
+---
 
-    mode: deliberation
+# 32. Evidence Strength
 
-    readiness:
-      status: unknown
-      rationale: []
+A future evidence scorer might consider:
 
-    explicit_human_request: false
+```text
+DIRECTNESS
 
-    semantic_invariants: []
+SPECIFICITY
 
-    material_uncertainties: []
+RECENCY
 
-    rhetorical_constraints: []
+SOURCE QUALITY
 
-    interactional_constraints: []
+CONTEXTUAL MATCH
 
-    linguistic_constraints: []
+REPETITION
 
-    relevant_external_evidence: []
+HUMAN CONFIRMATION
 
-    permitted_transformations: []
+CONTRADICTION
 
-    prohibited_substantive_additions: []
+TRANSFER DISTANCE
+```
 
-    semantic_drift_flags: []
+Conceptually:
 
-    interactional_drift_flags: []
+```text
+high relevance
++
+high specificity
++
+strong source
++
+current evidence
++
+human confirmation
+=
+strong influence
+```
 
+This is not currently a validated scoring formula.
 
-  # ============================================================
-  # PERSISTENCE
-  #
-  # State should not automatically become persistent merely because
-  # the architecture is capable of representing it.
-  # ============================================================
+---
 
-  persistence:
+# 33. Transfer Distance
 
-    turn_level: []
+Evidence gathered in one context should not automatically transfer to another.
 
-    session_level: []
+Example:
 
-    task_level: []
+```text
+observed:
+user writes very formally in grant proposals
 
-    domain_level: []
+target:
+text to sibling
+```
 
-    cross_domain: []
+Transfer distance is high.
 
-    persistent: []
+By contrast:
 
+```text
+observed:
+user's recent texts to the same recipient
 
-  # ============================================================
-  # MODEL UNCERTAINTY
-  # ============================================================
+target:
+new text to same recipient
+```
 
-  model_uncertainty:
+Transfer distance is low.
 
-    unresolved_inferences: []
+Transfer distance should affect confidence.
 
-    conflicting_evidence: []
+---
 
-    low_confidence_representations: []
+# 34. Minimum Necessary Evidence
 
-    correction_needed: []
+The evidence layer should follow:
 
+> **Use the minimum evidence necessary to materially improve the decision.**
 
-  # ============================================================
-  # HUMAN CORRECTION
-  #
-  # The human must be able to correct, reject, narrow, or remove
-  # system representations.
-  # ============================================================
+For example, if:
 
-  user_correction:
+```text
+current interaction
++
+recipient role
++
+known genre
+```
 
-    pending: false
+already justify the final wording, the system may not need:
 
-    corrected_elements: []
+```text
+web retrieval
+historical corpus search
+broad cultural inference
+```
 
-    rejected_inferences: []
+More data is not automatically better.
 
-    narrowed_generalizations: []
+---
 
-    deleted_representations: []
+# 35. Evidence Budget
+
+A mature architecture may maintain an evidence budget.
+
+Conceptually:
+
+```yaml
+evidence_budget:
+
+  cognitive_need:
+    current_state_sufficient: true
+
+  rhetorical_need:
+    audience_context_sufficient: true
+
+  factual_need:
+    external_verification_required: false
+
+  linguistic_need:
+    current_samples_sufficient: true
+
+  additional_collection:
+    justified: false
+```
+
+This makes data minimization operational rather than aspirational.
+
+---
+
+# 36. High-Information / Low-Intrusion Retrieval
+
+When additional information is necessary, prefer the smallest query likely to change the system's decision.
+
+For example:
+
+Instead of:
+
+> "Tell me everything about your relationship with this professor."
+
+Ask:
+
+> "Is this professor grading the work you're responding to?"
+
+because power may materially alter the rhetorical move.
+
+Likewise:
+
+Instead of researching a recipient broadly:
+
+```text
+verify only the public fact relevant to the message
+```
+
+if that is all the compiler needs.
+
+---
+
+# 37. Evidence Permissions
+
+Evidence may require separate permissions.
+
+Conceptually:
+
+```text
+MAY USE PRIVATELY TO CALIBRATE
+```
+
+does not imply:
+
+```text
+MAY REVEAL TO RECIPIENT
+```
+
+A future evidence object should therefore support permissions such as:
+
+```text
+private_calibration
+
+controller_use
+
+compiler_use
+
+explicit_reference
+
+persistent_storage
+```
+
+---
+
+# 38. Research Visibility
+
+The system should consider whether revealing retrieved information will expose the research process.
+
+Example:
+
+```text
+system privately knows:
+recipient published a paper yesterday
+```
+
+Possible utterance:
+
+> "I read your paper yesterday..."
+
+That may be appropriate.
+
+Or it may feel surveillant.
+
+The compiler should estimate:
+
+```text
+interactional value
+versus
+research visibility
+```
+
+before surfacing externally retrieved context.
+
+---
+
+# 39. Retrieval and Belonging
+
+More personal knowledge does not necessarily create more belonging.
+
+Sometimes:
+
+```text
+less revealed knowledge
++
+better recognition
++
+more response latitude
+```
+
+produces the stronger interaction.
+
+Evidence can improve a relational move by helping the system know what **not to mention**.
+
+---
+
+# 40. Retrieval and the Metacognitive Controller
+
+The controller may request evidence when the human lacks necessary information.
+
+Example:
+
+```text
+current cognitive need:
+compare two explanations
+
+blocking issue:
+one relevant fact is unknown
+
+controller decision:
+retrieve fact
+
+then:
+return judgment to human
+```
+
+A possible internal instruction:
+
+```text
+Retrieve the factual chronology.
+
+Do not interpret its significance.
+
+Present the chronology neutrally.
+
+Ask the human whether it changes the causal explanation.
+```
+
+This is cognition-preserving retrieval.
+
+---
+
+# 41. Retrieval and the Rhetorical Compiler
+
+The compiler may request evidence when the artifact requires support.
+
+Example:
+
+```text
+purpose:
+technical critique
+
+claim:
+architecture differs from generic dialogue-state tracking
+
+need:
+accurate description of related work
+
+retrieval:
+primary literature
+
+compiler:
+integrate cautious comparison
+
+drift check:
+ensure literature summary does not become a stronger novelty claim
+```
+
+---
+
+# 42. Evidence Provenance
+
+External evidence should remain provenance-visible.
+
+Possible source classes include:
+
+```text
+HUMAN-PROVIDED
+
+MODEL-PRIOR
+
+RETRIEVED-PRIMARY
+
+RETRIEVED-SECONDARY
+
+INSTITUTIONAL
+
+CORPUS
+
+PUBLIC-CONTEXT
+
+UNKNOWN
+```
+
+A final artifact may therefore distinguish:
+
+```text
+human judgment
+
+system-supplied external fact
+
+joint organization
+
+system-generated wording
+```
+
+---
+
+# 43. Evidence and Conceptual Provenance
+
+External evidence can trigger human cognition.
+
+Example:
+
+```text
+retrieved fact:
+Creon reverses course only after multiple warnings
+
+human:
+"Then maybe rigidity matters more than the original decree."
+```
+
+Conceptual provenance:
+
+```text
+HUMAN_ORIGINATED
+```
+
+Metacognitive provenance:
+
+```text
+EXTERNAL_EVIDENCE_TRIGGERED
+```
+
+Evidentiary provenance:
+
+```text
+RETRIEVED_SOURCE
+```
+
+This is exactly why multiple provenance dimensions are necessary.
+
+---
+
+# 44. Evidence and Linguistic Provenance
+
+Suppose the system retrieves a field-specific term:
+
+```text
+epistemic authority
+```
+
+The final artifact may use that term.
+
+That does not necessarily mean the substantive concept originated with the system.
+
+Possible representation:
+
+```text
+concept:
+human-developed
+
+terminology:
+externally supplied
+
+wording:
+system-transposed
+```
+
+---
+
+# 45. Citation and Attribution
+
+When an artifact requires citation, the compiler should preserve source identity and citation expectations.
+
+Relevant distinctions include:
+
+```text
+fact used for internal calibration
+
+fact stated in artifact
+
+quotation
+
+paraphrase
+
+scholarly claim
+
+common knowledge
+
+personal observation
+```
+
+These require different attribution behavior.
+
+---
+
+# 46. Evidence for Educational Use
+
+In learning contexts, the evidence layer should respect the learning objective.
+
+For example:
+
+```text
+learning objective:
+source evaluation
+
+system should not:
+perform all source evaluation for learner
+```
+
+But:
+
+```text
+learning objective:
+construct historical argument
+
+system may:
+retrieve primary sources
+
+learner must:
+evaluate and interpret them
+```
+
+The evidence layer should therefore know what cognitive work is being preserved.
+
+---
+
+# 47. Evidence for Rhetorical Tasks
+
+For rhetorical composition, the system may retrieve:
+
+```text
+audience expectations
+
+institutional context
+
+genre conventions
+
+public facts
+
+technical terminology
+
+relevant precedent
+```
+
+while preserving the human's rhetorical judgment.
+
+---
+
+# 48. Current Culture and Idiomatic Use
+
+A future implementation may query current public language data when:
+
+```text
+meaning depends on rapidly changing usage
+```
+
+Examples include:
+
+```text
+slang
+meme language
+platform conventions
+emoji interpretation
+community humor
+technical shorthand
+```
+
+The system should avoid overclaiming consensus.
+
+Preferred framing:
+
+```text
+"This usage appears common in current examples."
+```
+
+rather than:
+
+```text
+"This is what this generation means."
+```
+
+---
+
+# 49. Linguistic Anthropology and Sociolinguistics
+
+The evidence layer may draw conceptually from:
+
+```text
+sociolinguistics
+
+linguistic anthropology
+
+conversation analysis
+
+pragmatics
+
+discourse analysis
+
+rhetoric
+
+genre studies
+```
+
+These traditions help explain why:
+
+```text
+meaning
+```
+
+is not recoverable from lexical form alone.
+
+Relevant variables may include:
+
+```text
+indexicality
+stance
+identity positioning
+role
+register
+face
+community norms
+code-switching
+interactional history
+```
+
+The architecture should use such concepts to model interaction without pretending that group-level research determines individual behavior.
+
+---
+
+# 50. Data Minimization
+
+Evidence collection creates privacy risk.
+
+Therefore the system should prefer:
+
+```text
+ABSTRACTED RELEVANT STATE
+```
+
+over:
+
+```text
+UNLIMITED RAW PERSONAL HISTORY
+```
+
+when equivalent performance is possible.
+
+For example:
+
+Prefer storing:
+
+```text
+"dry understatement has been successful in low-stakes exchanges
+with this recipient"
+```
+
+over indefinitely storing every message ever exchanged.
+
+Whether such abstraction is sufficient remains an empirical question.
+
+---
+
+# 51. Local / On-Device Evidence Processing
+
+Some evidence-processing functions may be candidates for local inference.
+
+Examples include:
+
+```text
+idiolect feature extraction
+
+sentence-length statistics
+
+discourse-marker frequency
+
+state summarization
+
+provenance alignment
+
+similarity matching
+
+recent reasoning-history updates
+```
+
+This may permit useful personalization without sending all raw personal text to a remote general-purpose model.
+
+This is a research hypothesis, not an implementation guarantee.
+
+---
+
+# 52. Evidence Deletion and Correction
+
+Evidence state should be corrigible.
+
+A human should be able to indicate:
+
+```text
+this is outdated
+
+this was context-specific
+
+this inference is wrong
+
+do not generalize this
+
+do not retain this
+
+do not use this relationship history
+```
+
+The system should propagate meaningful corrections to dependent representations where feasible.
+
+---
+
+# 53. Failure Modes
+
+## Evidence maximalism
+
+The system assumes more information always improves performance.
+
+## Surveillance personalization
+
+The system accumulates personal history beyond what the interaction requires.
+
+## Stale knowledge
+
+Outdated model priors are treated as current facts.
+
+## Cultural determinism
+
+Group-level evidence becomes a claim about an individual.
+
+## Genre essentialism
+
+Writing convention becomes an inflexible rule.
+
+## Retrieval displacement
+
+Research overwhelms or replaces the human's actual judgment.
+
+## Research visibility failure
+
+The final utterance reveals information that should have remained private calibration.
+
+## Context collapse
+
+Language evidence from one relationship or genre is applied globally.
+
+## Source flattening
+
+Human speech, model prior, and verified external source are treated as equally authoritative.
+
+## Provenance loss
+
+External evidence enters the artifact without remaining distinguishable from human judgment.
+
+## Linguistic cosplay
+
+The system retrieves community language and imitates it without interactional permission.
+
+## Freshness failure
+
+Rapidly changing language or facts are handled using stale knowledge.
+
+## Evidence laundering
+
+A system-generated inference is presented as though supported by an external source.
+
+---
+
+# 54. Evaluation
+
+The Evidence and Retrieval Layer should be evaluated independently.
+
+Possible measures include:
+
+```text
+retrieval necessity
+
+source relevance
+
+source quality
+
+freshness
+
+person-specific fit
+
+genre fit
+
+linguistic interpretation accuracy
+
+privacy exposure
+
+research visibility
+
+unnecessary retrieval rate
+
+external-evidence attribution accuracy
+
+semantic drift caused by retrieval
+
+rhetorical improvement attributable to evidence
+```
+
+A powerful retrieval system is not successful if it routinely gathers information that does not improve the final decision.
+
+---
+
+# 55. Ablation Questions
+
+The architecture should eventually test:
+
+```text
+current interaction only
+
++
+
+reasoning history
+
++
+
+user language samples
+
++
+
+base-model priors
+
++
+
+domain sources
+
++
+
+web retrieval
+```
+
+to determine which evidence sources materially improve outcomes.
+
+Possible findings may show that some layers add complexity without meaningful benefit.
+
+If so, remove them.
+
+---
+
+# 56. Engine 1 Interface
+
+The Evidence Layer may provide Engine 1 with:
+
+```text
+task-relevant factual evidence
+
+disciplinary epistemic rules
+
+reasoning-history observations
+
+current-task intervention evidence
+
+domain terminology
+
+counterexample material
+
+source material for evaluation
+```
+
+But Engine 1 remains responsible for determining:
+
+```text
+WHAT COGNITIVE OPERATION SHOULD REMAIN WITH THE HUMAN?
+```
+
+---
+
+# 57. Engine 2 Interface
+
+The Evidence Layer may provide Engine 2 with:
+
+```text
+genre conventions
+
+speaker-language evidence
+
+audience-language evidence
+
+discourse-community conventions
+
+current terminology
+
+rhetorical precedent
+
+relevant factual support
+
+relationship-specific language history
+
+current cultural / idiomatic information
+```
+
+But Engine 2 remains responsible for determining:
+
+```text
+WHAT EXACT UTTERANCE BEST REALIZES THE HUMAN'S JUDGMENT HERE?
+```
+
+---
+
+# 58. Full Evidence-Aware Architecture
+
+Conceptually:
+
+```text
+                         HUMAN
+                           │
+                           ▼
+                CURRENT INTERACTION
+                           │
+          ┌────────────────┴────────────────┐
+          │                                 │
+          ▼                                 ▼
+   COGNITIVE STATE                 METACOGNITIVE STATE
+          │                                 │
+          └────────────────┬────────────────┘
+                           │
+                           ▼
+                EVIDENCE REQUEST?
+                           │
+               ┌───────────┴───────────┐
+               │                       │
+              NO                      YES
+               │                       │
+               │               EVIDENCE ROUTER
+               │                       │
+               │      ┌────────────────┼────────────────┐
+               │      ▼                ▼                ▼
+               │ USER / HISTORY   MODEL PRIORS    RETRIEVAL
+               │      │                │                │
+               │      └────────────────┼────────────────┘
+               │                       │
+               │                EVIDENCE RANKING
+               │                       │
+               └───────────────┬───────┘
+                               ▼
+                    METACOGNITIVE CONTROLLER
+                               │
+                               ▼
+                        HUMAN JUDGMENT
+                               │
+                               ▼
+                      COMPOSITION HANDOFF
+                               │
+                               ▼
+                         EVIDENCE ROUTER
+                               │
+            ┌──────────────────┼──────────────────┐
+            ▼                  ▼                  ▼
+      USER LANGUAGE       GENRE / DOMAIN      CURRENT
+        EVIDENCE           CONVENTIONS       RETRIEVAL
+            │                  │                  │
+            └──────────────────┼──────────────────┘
+                               ▼
+                    RHETORICAL COMPILER
+                               │
+                               ▼
+                    SEMANTIC / SOCIAL CHECK
+                               │
+                               ▼
+                     EXACT FINAL UTTERANCE
+```
+
+---
+
+# 59. Architectural Principle
+
+The Evidence and Retrieval Layer exists to operationalize a deceptively simple principle:
+
+> **Know only what materially helps.  
+> Know where it came from.  
+> Know what it permits.**
+
+And specifically for language:
+
+> **General linguistic knowledge can suggest what a form may mean.  
+> Individual evidence tells us whether that meaning fits this person.  
+> Interactional evidence tells us whether this speaker should use it here.**
+
+And specifically for cognition:
+
+> **The system may supply information.  
+> The human must still perform the judgment the task intends to preserve.**
+
+The objective is not maximal knowledge.
+
+It is **appropriately sourced, minimally sufficient evidence in service of better human cognition and more exact rhetorical action.**
