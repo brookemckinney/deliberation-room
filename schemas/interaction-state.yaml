@@ -20,7 +20,7 @@
 #
 #   Unknown should remain unknown.
 
-schema_version: "0.1"
+schema_version: "0.2"
 
 interaction_state:
 
@@ -34,6 +34,13 @@ interaction_state:
     source: null
     confidence: null
     status: active
+
+
+  # ============================================================
+  # MODEL 1 — COGNITIVE STATE
+  #
+  # What does the human currently appear to think?
+  # ============================================================
 
   cognitive_state:
 
@@ -68,29 +75,238 @@ interaction_state:
       rationale: []
       tested_against: []
 
-  person_reasoning_model:
+
+  # ============================================================
+  # MODEL 2 — METACOGNITIVE PROCESS
+  #
+  # How is productive cognitive movement occurring RIGHT NOW?
+  #
+  # This is live controller state.
+  # It is not a fixed cognitive type, personality classification,
+  # or learning-style profile.
+  # ============================================================
+
+  metacognitive_process_model:
+
+    current_operations:
+
+      - operation: null
+        # Examples:
+        # compare
+        # contrast
+        # analogize
+        # instantiate
+        # abstract
+        # classify
+        # generate_example
+        # generate_counterexample
+        # test_counterfactual
+        # identify_assumption
+        # construct_warrant
+        # evaluate_evidence
+        # isolate_variable
+        # trace_causal_chain
+        # shift_perspective
+        # identify_invariant
+        # synthesize
+        # revise
+        # reject
+        # stabilize_judgment
+
+        status: possible
+        # possible
+        # active
+        # productive
+        # stalled
+        # completed
+
+        evidence_events: []
+
+        confidence: null
+
+        human_confirmed: false
+
+    operation_evidence:
+
+      - operation: null
+
+        attempts: 0
+
+        productive_state_changes: 0
+
+        low_value_responses: 0
+
+        current_support: unknown
+        # low
+        # moderate
+        # high
+        # unknown
+
+        evidence_events: []
+
+        confidence: null
+
+    current_cognitive_needs:
+
+      - need: null
+        # Examples:
+        # expose_assumption
+        # test_claim
+        # construct_warrant
+        # localize_uncertainty
+        # identify_invariant
+        # instantiate_abstraction
+        # abstract_from_examples
+        # compare_explanations
+        # incorporate_perspective
+        # evaluate_evidence
+        # stabilize_judgment
+
+        priority: null
+
+        evidence_events: []
+
+        confidence: null
+
+    intervention_response:
+
+      productive_moves: []
+
+      low_value_moves: []
+
+      recent_pattern: null
+
+      diminishing_returns: []
+
+    abstraction_state:
+
+      current_level: unknown
+      # concrete
+      # mixed
+      # abstract
+      # unknown
+
+      current_tolerance: unknown
+      # low
+      # moderate
+      # high
+      # unknown
+
+      evidence_events: []
+
+      confidence: null
+
+    revision_state:
+
+      recent_revision_types: []
+
+      rejected_system_framings: []
+
+      accepted_system_framings: []
+
+      human_modified_system_framings: []
+
+    uncertainty_state:
+
+      localized: false
+
+      productive_uncertainty: []
+
+      blocking_uncertainty: []
+
+    current_control_signal:
+
+      preferred_operations: []
+
+      deprioritized_operations: []
+
+      exploration_candidates: []
+
+      substitution_risk: null
+
+      controller_instruction: null
+      # Example:
+      #
+      # "Counterfactual testing has recently produced useful
+      # revision. Change one variable. Do not supply the likely
+      # distinction. Ask what remains invariant."
+
+    task_context:
+
+      domain: null
+
+      disciplinary_walking_rules: []
+
+    model_status:
+
+      confidence: null
+
+      last_updated_from_event: null
+
+      human_corrections: []
+
+
+  # ============================================================
+  # REASONING HISTORY
+  #
+  # Prior task-bounded evidence that MAY inform Model 2.
+  #
+  # This is deliberately separate from the live metacognitive
+  # process model.
+  #
+  # Current-task evidence should generally outweigh older patterns.
+  # Historical observations should not become fixed cognitive types.
+  # ============================================================
+
+  reasoning_history:
 
     domain_expertise: []
 
     prior_knowledge: []
 
-    productive_reasoning_patterns: []
+    observations:
 
-    representation_preferences: []
+      - observation: null
 
-    abstraction_preferences: []
+        operation: null
 
-    challenge_preferences: []
+        context: null
 
-    scaffolding_preferences: []
+        domain: null
 
-    revision_patterns: []
+        source_tasks: []
 
-    evidence_use_patterns: []
+        evidence_events: []
 
-    uncertainty_patterns: []
+        confidence: null
 
-    metacognitive_observations: []
+        scope: null
+        # task
+        # domain
+        # cross_domain
+
+        human_confirmed: false
+
+        still_supported: null
+
+    transfer_candidates: []
+
+    contradicted_patterns: []
+
+    decay_or_expiration_notes: []
+
+    human_corrections: []
+
+
+  # ============================================================
+  # MODEL 3 — LINGUISTIC / SOCIOLINGUISTIC
+  #
+  # How does language operate for this human in this discourse
+  # environment?
+  #
+  # These representations concern meaning and communicative
+  # practice, not merely preferred "tone."
+  # ============================================================
 
   linguistic_sociolinguistic_model:
 
@@ -135,6 +351,14 @@ interaction_state:
     repair_history: []
 
     semantic_uncertainty: []
+
+
+  # ============================================================
+  # MODEL 4 — INTERACTION
+  #
+  # What does a communicative move DO here, between these
+  # participants, for this purpose?
+  # ============================================================
 
   interaction_model:
 
@@ -202,6 +426,14 @@ interaction_state:
       level: unknown
       constraints: []
 
+
+  # ============================================================
+  # EPISTEMIC STATUS
+  #
+  # Keep observations, inferences, hypotheses, confirmations,
+  # contradictions, and unknowns distinguishable.
+  # ============================================================
+
   epistemic_status:
 
     observed: []
@@ -216,17 +448,46 @@ interaction_state:
 
     unknown: []
 
+
+  # ============================================================
+  # PROVENANCE
+  #
+  # Conceptual, metacognitive, and linguistic contribution are
+  # distinct.
+  # ============================================================
+
   provenance:
 
     conceptual_events: []
+
+    metacognitive_events: []
 
     linguistic_events: []
 
     external_sources: []
 
+
+  # ============================================================
+  # CURRENT POLICY STATE
+  #
+  # The policy selects:
+  #
+  # 1. what cognitive operation should remain with the human;
+  # 2. what system move can create conditions for that operation;
+  # 3. how that move should be linguistically realized.
+  # ============================================================
+
   current_policy_state:
 
     candidate_moves: []
+
+    target_cognitive_operation: null
+
+    metacognitive_control_instruction: null
+    # Example:
+    #
+    # "Use one counterfactual. Change only one variable.
+    # Do not name the distinction. Ask what remains invariant."
 
     selected_move:
       action: null
@@ -234,6 +495,11 @@ interaction_state:
 
       expected_cognitive_value: null
       expected_information_gain: null
+
+      expected_productive_state_change: []
+
+      disciplinary_validity: null
+
       agency_preservation: null
       response_latitude: null
       correctability: null
@@ -249,6 +515,17 @@ interaction_state:
       linguistic_realization: null
       interactional_affordance: []
 
+
+  # ============================================================
+  # COMPOSITION STATE
+  #
+  # Deliberation and composition are separate architectural phases.
+  #
+  # Once the relevant judgment is sufficiently stable, or the
+  # human explicitly requests composition, Engine 2 may perform
+  # substantial rhetorical and linguistic work.
+  # ============================================================
+
   composition_state:
 
     mode: deliberation
@@ -261,13 +538,31 @@ interaction_state:
 
     semantic_invariants: []
 
+    material_uncertainties: []
+
     rhetorical_constraints: []
+
+    interactional_constraints: []
+
+    linguistic_constraints: []
+
+    relevant_external_evidence: []
 
     permitted_transformations: []
 
     prohibited_substantive_additions: []
 
     semantic_drift_flags: []
+
+    interactional_drift_flags: []
+
+
+  # ============================================================
+  # PERSISTENCE
+  #
+  # State should not automatically become persistent merely because
+  # the architecture is capable of representing it.
+  # ============================================================
 
   persistence:
 
@@ -283,6 +578,11 @@ interaction_state:
 
     persistent: []
 
+
+  # ============================================================
+  # MODEL UNCERTAINTY
+  # ============================================================
+
   model_uncertainty:
 
     unresolved_inferences: []
@@ -292,6 +592,14 @@ interaction_state:
     low_confidence_representations: []
 
     correction_needed: []
+
+
+  # ============================================================
+  # HUMAN CORRECTION
+  #
+  # The human must be able to correct, reject, narrow, or remove
+  # system representations.
+  # ============================================================
 
   user_correction:
 
