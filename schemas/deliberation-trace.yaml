@@ -106,6 +106,74 @@ deliberation_trace:
 
         rationale: []
 
+              metacognitive_provenance:
+
+        classification: null
+        # human_self_initiated
+        # system_elicited_human_performed
+        # system_proposed_human_recognized
+        # system_proposed_human_revised
+        # system_proposed_human_rejected
+        # jointly_developed
+        # external_evidence_triggered
+        # unknown
+
+        target_operation: null
+        # Examples:
+        # clarify
+        # compare
+        # contrast
+        # classify
+        # analogize
+        # instantiate
+        # abstract
+        # generate_counterexample
+        # test_counterfactual
+        # identify_assumption
+        # construct_warrant
+        # evaluate_evidence
+        # isolate_variable
+        # trace_causal_chain
+        # shift_perspective
+        # identify_invariant
+        # synthesize
+        # revise
+        # stabilize_judgment
+
+        intervention_type: null
+        # Examples:
+        # clarification
+        # comparison
+        # counterexample
+        # counterfactual
+        # reflection
+        # evidence_request
+        # perspective_shift
+        # instantiation
+        # abstraction_prompt
+        # warrant_test
+        # assumption_surface
+
+        productive_state_change: null
+
+        change_types: []
+        # Examples:
+        # new_distinction
+        # claim_revision
+        # assumption_exposed
+        # warrant_articulated
+        # uncertainty_localized
+        # evidence_re_evaluated
+        # variable_isolated
+        # perspective_incorporated
+        # abstraction_produced
+        # contradiction_resolved
+        # judgment_stabilized
+
+        confidence: null
+
+        rationale: []
+
       linguistic_provenance:
 
         classification: null
@@ -360,6 +428,16 @@ deliberation_trace:
         classification: null
         confidence: null
 
+      metacognitive_provenance:
+
+        classification: null
+
+        supporting_interventions: []
+
+        cognitive_operations: []
+
+        confidence: null
+
       stability_basis: []
 
       remaining_uncertainty: []
@@ -386,9 +464,39 @@ deliberation_trace:
           classification: null
           confidence: null
 
+              metacognitive_provenance:
+
+        classification: null
+
+                metacognitive_provenance:
+
+          source_operations: []
+
+          source_interventions: []
+
+          classification: null
+
+          confidence: null
+
+        supporting_interventions: []
+
+        cognitive_operations: []
+
+        confidence: null
+
         linguistic_provenance:
           classification: null
           confidence: null
+
+              metacognitive_provenance:
+
+        classification: null
+
+        supporting_interventions: []
+
+        cognitive_operations: []
+
+        confidence: null
 
         semantic_relation_to_source: null
         # direct_preservation
@@ -406,13 +514,80 @@ deliberation_trace:
           status: unknown
           flags: []
 
-  metacognitive_summary:
+    metacognitive_process:
+
+    current_task_evidence:
+
+      - operation: null
+
+        attempts: null
+
+        productive_state_changes: null
+
+        accepted_system_proposals: null
+        revised_system_proposals: null
+        rejected_system_proposals: null
+
+        current_support: unknown
+        # low
+        # moderate
+        # high
+        # unknown
+
+        scope: task
+
+        confidence: null
+
+    current_process_hypotheses:
+
+      - hypothesis: null
+
+        evidence_events: []
+
+        confidence: null
+
+        human_confirmed: false
+
+        scope: task
+
+    current_control_preferences:
+
+      preferred_operations: []
+
+      deprioritized_operations: []
+
+      exploration_candidates: []
+
+      rationale: []
+
+    reasoning_history_candidates:
+
+      - observation: null
+
+        source_tasks: []
+
+        scope: null
+        # task
+        # domain
+        # cross_domain
+
+        confidence: null
+
+        persistence_candidate: false
+
+        human_review_required: true
+
+   metacognitive_summary:
 
     status: provisional
 
-    observations: []
+    task_observations: []
 
     productive_move_patterns: []
+
+    productive_cognitive_operations: []
+
+    low_value_interventions: []
 
     revision_patterns: []
 
@@ -425,12 +600,21 @@ deliberation_trace:
       distinctions: null
       warrants: null
       counterexamples: null
+      revisions: null
+
+    system_interventions:
+      total: null
+
+      productive: null
+
+      low_value: null
 
     system_proposals:
+      accepted_unchanged: null
       recognized: null
       revised: null
       rejected: null
-      unresolved: null
+      ignored: null
 
     question_resolution:
       human_resolved: null
@@ -438,8 +622,17 @@ deliberation_trace:
       jointly_resolved: null
       unresolved: null
 
+    metacognitive_contribution:
+      system_elicited_human_performed: null
+      human_self_initiated: null
+      jointly_developed: null
+      external_evidence_triggered: null
+
     composition_contribution:
       conceptual: null
+      metacognitive: null
+      organizational: null
+      evidentiary: null
       linguistic: null
 
     generalization_limits: []
