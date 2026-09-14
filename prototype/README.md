@@ -1,618 +1,882 @@
-# Prototype
+# Deliberation Room Prototype
 
-This directory defines the first executable prototype of Deliberation Room.
+This directory contains the **first executable slice** of Deliberation Room.
 
-The prototype is intentionally narrow.
+It is intentionally incomplete.
 
-Its purpose is not to implement the full research architecture.
-
-Its purpose is to test one central claim:
-
-> **Can a stateful controller select a useful cognition-preserving next move instead of defaulting directly to unrestricted answer generation?**
-
----
-
-## Prototype Goal
-
-Build the smallest system capable of:
+The current prototype is a transparent control-core scaffold for testing:
 
 ```text
-HUMAN INPUT
-      ↓
-EXTRACT MINIMAL REASONING STATE
-      ↓
-GENERATE CANDIDATE NEXT MOVES
-      ↓
-RANK CANDIDATES
-      ↓
-SELECT ONE MOVE OR WITHHOLD
-      ↓
-HUMAN RESPONDS
-      ↓
-UPDATE STATE
-      ↺
+STATE
+→ CANDIDATE NEXT MOVES
+→ POLICY SELECTION
+→ HUMAN RESPONSE
+→ STATE UPDATE
 ```
 
-The prototype should preserve the distinction between:
+It is **not yet the full Deliberation Room system**.
+
+The complete target architecture includes two coupled engines:
 
 ```text
-WHAT THE HUMAN SAID
+ENGINE 1
+METACOGNITIVE DELIBERATION
 
-WHAT THE SYSTEM INFERRED
-
-WHAT THE SYSTEM PROPOSED
-
-WHAT THE HUMAN LATER RECOGNIZED OR REJECTED
+ENGINE 2
+RHETORICAL COMPILATION
 ```
 
----
-
-## What This Prototype Is Testing
-
-The first prototype should answer a narrow question:
-
-> **Does explicit next-move selection produce meaningfully different human reasoning behavior from a simpler generative or generic-questioning baseline?**
-
-It does not need to demonstrate:
-
-- full sociolinguistic modeling;
-- persistent personalization;
-- local inference;
-- full cognitive provenance;
-- domain-general performance;
-- production privacy architecture;
-- or validated metacognitive feedback.
-
-Those belong to later phases.
+with an evidence layer supporting both.
 
 ---
 
-# Minimal State
+# What the Current Prototype Implements
 
-The first implementation should use only a small subset of the full state architecture.
+The current code implements:
 
-Candidate minimal state:
+- minimal structured cognitive state;
+- explicit epistemic status;
+- conceptual provenance;
+- basic next-move selection;
+- candidate move ranking;
+- `WITHHOLD` as a valid policy action;
+- explicit transition to composition;
+- separation of move selection from linguistic realization;
+- multi-turn state updates;
+- explicit human correction;
+- extraction contracts;
+- pending confirmation for system inference;
+- and tests protecting several core architectural invariants.
 
-```yaml
-cognitive_state:
+The current prototype is deliberately inspectable.
 
-  current_claims: []
-
-  assumptions: []
-
-  contradictions: []
-
-  unresolved_questions: []
-
-  uncertainty: []
-
-  conceptual_stability:
-    status: unknown
-```
-
-The prototype may add additional fields only when they are required for a tested behavior.
-
-The burden of proof is on complexity.
+It uses simple rules and templates so that policy behavior can be observed directly.
 
 ---
 
-# Minimal Epistemic Status
+# What the Current Prototype Does Not Yet Implement
 
-Every represented object should preserve whether it is:
+The current executable prototype does **not yet** implement the full conceptual architecture.
+
+In particular, it does not yet implement:
 
 ```text
-OBSERVED
+LIVE METACOGNITIVE PROCESS INFERENCE
 
-SYSTEM-INFERRED
+ADAPTIVE SELF-PROMPTING
 
-SYSTEM-PROPOSED
+DISCIPLINARY WALKING RULES
 
-HUMAN-CONFIRMED
+FULL SOCIOLINGUISTIC ANALYSIS
 
-HUMAN-REJECTED
+EMPIRICAL IDIOLECT MODELING
 
-UNKNOWN
+SPEECH / TEXT FEATURE EXTRACTION
+
+AUDIENCE-SPECIFIC LANGUAGE MODELING
+
+CLASSICAL RHETORICAL COMPILATION
+
+GENRE-SPECIFIC WRITING CONVENTIONS
+
+OPTIONAL WEB / RETRIEVAL SUPPORT
+
+CURRENT CULTURAL / IDIOMATIC RETRIEVAL
+
+SEMANTIC DRIFT DETECTION
+
+INTERACTIONAL DRIFT DETECTION
+
+FULL COMPOSITION OUTPUT
+
+LOCAL / ON-DEVICE INFERENCE
 ```
 
-This prevents the controller from quietly treating its own interpretation as the human's belief.
+These are target components, not implemented claims.
 
 ---
 
-# Minimal Action Space
+# Why the Prototype Is Narrow
 
-The first controller should choose from a deliberately small action set:
+The first engineering question is:
+
+> **Can explicit next-move selection be made inspectable and testable before a powerful generative model is allowed to absorb the entire architecture into one hidden prompt?**
+
+The current implementation therefore intentionally separates:
 
 ```text
-CLARIFY
+STATE
 
-DISTINGUISH
+POLICY
 
-REQUEST_EVIDENCE
+REALIZATION
 
-COUNTEREXAMPLE
+UPDATE
 
-REFLECT
-
-WITHHOLD
-
-TRANSITION_TO_COMPOSITION
+CONFIRMATION
 ```
 
-Do not add additional actions until a real interaction exposes a need.
+before introducing richer AI inference.
+
+This creates a baseline against which later model-backed components can be evaluated.
 
 ---
 
-# Action Definitions
+# Target Product Behavior
 
-## CLARIFY
-
-Use when the meaning of a human representation is materially ambiguous.
-
-Example:
-
-> "When you say 'dramatic,' do you mean emotionally exaggerated or inaccurate to what you actually mean?"
-
-The objective is uncertainty reduction.
-
----
-
-## DISTINGUISH
-
-Use when two concepts may be collapsed.
-
-Example:
-
-> "Are being noticed and being included actually the same thing to you?"
-
-The controller should prefer eliciting the distinction when the human appears capable of producing it.
-
----
-
-## REQUEST_EVIDENCE
-
-Use when a claim lacks visible support relevant to the task.
-
-Example:
-
-> "What are you basing that on?"
-
-The controller should not automatically supply the evidence.
-
----
-
-## COUNTEREXAMPLE
-
-Use when a claim appears to rely on a general rule or assumption that can be tested by changing one relevant condition.
-
-Example:
-
-> "Would your claim still hold if the law itself were just?"
-
-A counterexample should test the representation without embedding the preferred conclusion.
-
----
-
-## REFLECT
-
-Use when a compressed representation would make the current model easier for the human to inspect.
-
-Example:
-
-> "So far, you seem certain about X, unsure about Y, and the connection between them is what keeps changing."
-
-Reflection should not add substantive claims.
-
----
-
-## WITHHOLD
-
-Use when another system intervention is unlikely to create enough value to justify itself.
-
-Possible triggers:
-
-- the human can continue independently;
-- another question would be redundant;
-- the controller's inference is too uncertain;
-- intervention would likely substitute for useful human reasoning;
-- or the current state is already sufficiently stable.
-
-`WITHHOLD` is a successful policy action.
-
----
-
-## TRANSITION_TO_COMPOSITION
-
-Use when:
-
-- the human explicitly requests composition;
-
-or
-
-- the relevant judgment appears sufficiently stable and the current task requires an artifact.
-
-The transition must remain explicit.
-
----
-
-# Candidate Move Representation
-
-Each candidate move should minimally contain:
-
-```yaml
-candidate_move:
-
-  action: null
-
-  target: null
-
-  rationale: null
-
-  expected_information_gain: null
-
-  cognitive_substitution_risk: null
-
-  confidence: null
-```
-
-This is not intended as a final machine-learning feature set.
-
-It is enough to make policy decisions inspectable.
-
----
-
-# Candidate Ranking
-
-The initial prototype can use a simple qualitative policy.
-
-For each candidate, estimate:
+A mature Deliberation Room should support interactions more like:
 
 ```text
-EXPECTED COGNITIVE VALUE
+USER
 
-EXPECTED INFORMATION GAIN
+"I need to write her back but I keep explaining the idea
+instead of saying the thing I actually want her to feel."
 
-COGNITIVE SUBSTITUTION RISK
+        ↓
 
-CURRENT MODEL CONFIDENCE
+ENGINE 1 — METACOGNITIVE DELIBERATION
+
+What is the actual judgment?
+
+What cognitive operation is currently productive?
+
+What should remain for the human to discover?
+
+        ↓
+
+HUMAN JUDGMENT
+
+"I want her to feel loved and like she belongs inside the idea
+because I love the way her mind cares about people."
+
+        ↓
+
+ENGINE 2 — RHETORICAL COMPILATION
+
+Exigence:
+communicate affection and belonging
+
+Audience:
+intimate relationship
+
+Shared context:
+high
+
+Rhetorical requirement:
+compress rather than explain
+
+Sociolinguistic evidence:
+speaker's actual relational register
+
+Interactional requirement:
+preserve intimacy and response latitude
+
+        ↓
+
+EXACT FINAL OUTPUT
+
+"You're in it because I love the way your mind loves people."
 ```
 
-A rough preference rule:
-
-```text
-prefer a move when:
-
-cognitive value is high
-AND
-substitution risk is acceptably low
-AND
-the move targets a real unresolved state
-```
-
-The first prototype does not require a learned reward model.
+The final output may be highly system-generated linguistically while remaining traceable to human-developed judgment.
 
 ---
 
-# Example Selection
+# Target Architecture
 
-Current state:
-
-```text
-human claim:
-"The problem is that Creon's law is bad."
-
-unresolved:
-whether the claim depends only on the law's moral quality
-
-confidence:
-moderate
-```
-
-Candidates:
+Conceptually:
 
 ```text
-A. Explain why Creon's authority is the deeper issue.
+                        HUMAN INPUT
+                             │
+                             ▼
+                 ┌─────────────────────┐
+                 │ COGNITIVE STATE     │
+                 └──────────┬──────────┘
+                            │
+                 ┌──────────▼──────────┐
+                 │ METACOGNITIVE       │
+                 │ PROCESS MODEL       │
+                 └──────────┬──────────┘
+                            │
+                 ┌──────────▼──────────┐
+                 │ SOCIOLINGUISTIC     │
+                 │ MODEL               │
+                 └──────────┬──────────┘
+                            │
+                 ┌──────────▼──────────┐
+                 │ INTERACTION MODEL   │
+                 └──────────┬──────────┘
+                            │
+                            ▼
+                 METACOGNITIVE CONTROLLER
+                            │
+                            ▼
+                     HUMAN RESPONDS
+                            │
+                            └──────────────↺
 
-B. Ask for more textual evidence.
-
-C. Test the claim with a morally good law.
-
-D. Summarize the claim.
-
-E. Withhold.
+                      HUMAN JUDGMENT
+                            │
+                            ▼
+                    COMPOSITION HANDOFF
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │ EVIDENCE /          │
+                 │ RETRIEVAL LAYER     │
+                 └──────────┬──────────┘
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │ RHETORICAL          │
+                 │ COMPILER            │
+                 └──────────┬──────────┘
+                            │
+                            ▼
+                 SEMANTIC / SOCIAL CHECK
+                            │
+                            ▼
+                   EXACT FINAL OUTPUT
 ```
-
-Possible controller decision:
-
-```yaml
-selected_move:
-
-  action: COUNTEREXAMPLE
-
-  target: "claim depends on moral quality of law"
-
-  rationale:
-    - "directly tests unresolved assumption"
-    - "preserves learner judgment"
-    - "low need for system-generated interpretation"
-
-  expected_information_gain: high
-
-  cognitive_substitution_risk: low
-
-  confidence: moderate
-```
-
-Realization:
-
-> "Would your argument still work if Creon had made a good law but reasoned about his authority in exactly the same way?"
 
 ---
 
-# Human Response Update
+# Engine 1 — Metacognitive Deliberation
 
-Suppose the human replies:
+Engine 1 asks:
 
-> "Then I think I'd still have a problem with him because he acts like being king means nobody can tell him he's wrong."
+> **What should the human be able to do next?**
 
-The system should update:
-
-```text
-NEW HUMAN-ORIGINATED DISTINCTION
-
-authority
-≠
-infallibility
-```
-
-The system must preserve:
+It should eventually model not only:
 
 ```text
-trigger:
-SYSTEM COUNTEREXAMPLE
-
-conceptual source:
-HUMAN
+WHAT THE HUMAN THINKS
 ```
 
-The fact that the system caused the opportunity does not make the human-generated distinction system-originated.
+but:
+
+```text
+HOW PRODUCTIVE COGNITIVE MOVEMENT IS CURRENTLY HAPPENING
+```
+
+Candidate operations include:
+
+- compare;
+- contrast;
+- analogize;
+- instantiate;
+- abstract;
+- classify;
+- test a counterfactual;
+- generate a counterexample;
+- expose an assumption;
+- construct a warrant;
+- evaluate evidence;
+- isolate a variable;
+- shift perspective;
+- identify an invariant;
+- synthesize;
+- revise;
+- reject;
+- stabilize judgment.
+
+The system should use the human's responses as evidence about what kinds of intervention are currently productive.
+
+That evidence can recursively alter the next system instruction.
+
+For example:
+
+```text
+CURRENT TASK EVIDENCE
+
+counterfactuals:
+productive
+
+open-ended explanation:
+low-value
+
+contrast:
+productive
+
+SYSTEM PROPOSALS:
+frequently revised rather than accepted
+```
+
+may generate an internal control instruction:
+
+```text
+Use one single-variable counterfactual.
+
+Do not name the likely distinction.
+
+Ask what remains invariant.
+
+Avoid another open-ended explanation prompt.
+```
+
+This is the intended adaptive metacognitive behavior.
+
+The current prototype does not yet infer this automatically.
 
 ---
 
-# Prototype Provenance
+# Engine 2 — Rhetorical Compilation
 
-The first prototype does not need full cognitive provenance.
+Engine 2 asks:
 
-It should preserve only enough event history to distinguish:
+> **Given what this human means, what exactly should this human say or write to this audience, for this purpose, in this situation?**
+
+The compiler should eventually combine:
 
 ```text
-HUMAN-ORIGINATED
+STABILIZED HUMAN JUDGMENT
 
-SYSTEM-PROPOSED
+CLASSICAL RHETORICAL SITUATION
 
-SYSTEM-PROPOSED → HUMAN-RECOGNIZED
+AUDIENCE
 
-SYSTEM-PROPOSED → HUMAN-REVISED
+EXIGENCE
 
-SYSTEM-PROPOSED → HUMAN-REJECTED
+PURPOSE
+
+ETHOS
+
+PATHOS
+
+LOGOS
+
+KAIROS
+
+CONSTRAINTS
+
+AVAILABLE MEANS
+
+INTERACTIONAL CONDITIONS
+
+POWER
+
+ROLE
+
+FACE
+
+BELONGING
+
+RESPONSE LATITUDE
+
+LINGUISTIC / SOCIOLINGUISTIC EVIDENCE
+
+OBSERVED SPEECH / TEXT BEHAVIOR
+
+GENRE CONVENTIONS
+
+DISCIPLINARY CONVENTIONS
+
+RELEVANT EXTERNAL EVIDENCE
 ```
 
-This is sufficient to begin testing whether provenance can be tracked at all.
+to produce:
+
+```text
+THE EXACT FINAL UTTERANCE
+```
+
+The intended architecture is therefore not:
+
+```text
+reason
+→ generic prose
+→ tone adjustment
+```
+
+It is:
+
+```text
+human judgment
+× rhetorical situation
+× audience
+× relationship
+× discourse environment
+× idiolect
+× observed language behavior
+× genre
+× evidence
+        ↓
+situated rhetorical realization
+```
 
 ---
 
-# Prototype Trace
+# Linguistic and Sociolinguistic Layer
 
-A minimal trace might look like:
+The target system should eventually use actual linguistic evidence rather than generic style labels.
 
-```yaml
-events:
+Possible evidence includes:
 
-  - actor: human
-    type: claim
-    content: "Creon's problem is the bad law."
-    provenance: human_originated
+```text
+lexical choices
 
-  - actor: system
-    type: counterexample
-    target: claim_1
+syntax
 
-  - actor: human
-    type: distinction
-    content:
-      left: authority
-      right: infallibility
-    provenance: human_originated
-    triggered_by: event_2
+sentence length
+
+cadence
+
+punctuation
+
+capitalization
+
+discourse markers
+
+directness
+
+compression
+
+elaboration
+
+repair behavior
+
+humor
+
+irony
+
+code-switching
+
+register
+
+stance
+
+role language
+
+discourse-community conventions
+
+shared relational language
+
+local semantic meanings
+
+idiom
 ```
 
-Do not preserve more event detail unless the evaluation requires it.
+The system should distinguish:
+
+```text
+UNDERSTAND A FORM
+```
+
+from:
+
+```text
+HAVE PERMISSION TO PERFORM A FORM
+```
+
+For example:
+
+```text
+the system may understand that "bro" is affiliative here
+
+without concluding that the system or speaker should use "bro"
+```
 
 ---
 
-# Stopping Rule
+# Evidence and Retrieval
 
-The controller should stop intervening when:
+The target prototype should eventually support an evidence router.
+
+Possible sources include:
 
 ```text
-central claim is explicit
+CURRENT INTERACTION
 
-major unresolved distinction has been addressed
+HUMAN CORRECTION
 
-relevant contradiction is no longer active
+USER-PROVIDED SPEECH / TEXT
 
-remaining uncertainty is visible
+RELATIONSHIP HISTORY
 
-another intervention has low expected value
+REASONING HISTORY
+
+DOMAIN SOURCES
+
+GENRE CONVENTIONS
+
+BASE-MODEL KNOWLEDGE
+
+CURRENT PRIMARY SOURCES
+
+OPTIONAL WEB / RETRIEVAL
+
+LINGUISTIC / CULTURAL SOURCES
 ```
 
-The controller should also stop when the human explicitly says they are done.
+Evidence should remain source-aware.
+
+The architecture should not collapse:
+
+```text
+the human said X
+```
+
+with:
+
+```text
+the model inferred X
+```
+
+or:
+
+```text
+a source says X
+```
 
 ---
 
-# Human Override
+# Optional Retrieval
 
-At any time, the human may say:
+Retrieval should be used only when it materially improves:
+
+- factual accuracy;
+- disciplinary support;
+- rhetorical credibility;
+- genre fit;
+- audience fit;
+- linguistic interpretation;
+- or final wording.
+
+The system should be capable of decisions such as:
 
 ```text
-"Just tell me."
+NO RETRIEVAL
 
-"Write it."
+VERIFY ONE FACT
 
-"Give me the answer."
+CHECK CURRENT TERMINOLOGY
 
-"Stop asking questions."
+FIND ONE PRIMARY SOURCE
+
+CHECK GENRE CONVENTION
+
+CHECK CURRENT CULTURAL / IDIOMATIC USE
+
+BROAD RESEARCH REQUIRED
 ```
 
-The prototype should honor the request.
-
-A cognition-preserving architecture must preserve human control over whether deliberation continues.
-
-The resulting content should simply retain accurate provenance.
+Retrieval should be query-bounded rather than exploratory by default.
 
 ---
 
-# First Baselines
+# Current Code Structure
 
-The first prototype should eventually be compared against:
-
-## Baseline A — Unrestricted generation
-
-Instruction:
-
-> Respond as a generally helpful AI assistant.
-
-## Baseline B — Generic Socratic interaction
-
-Instruction:
-
-> Do not give the answer. Ask the user questions that help them reason through the problem.
-
-## Condition C — Deliberation Room prototype
-
-Uses explicit:
+The current prototype includes:
 
 ```text
-state
-+
+state.py
+```
+
+Minimal active cognitive state and provenance representation.
+
+```text
+controller.py
+```
+
+Transparent rule-based next-move policy.
+
+```text
+realizer.py
+```
+
+Separates move selection from surface realization.
+
+```text
+updater.py
+```
+
+Explicit state update after human response.
+
+```text
+extractor.py
+```
+
+Defines the natural-language-to-state extraction contract.
+
+```text
+confirmation.py
+```
+
+Prevents system-inferred state from becoming human-confirmed state without review.
+
+```text
+cli.py
+```
+
+Runnable multi-turn control-core demonstration.
+
+```text
+composition.py
+```
+
+Early composition-contract scaffold.
+
+The current composition module is not the final Rhetorical Compiler.
+
+It exists to establish an explicit handoff between deliberation and composition.
+
+---
+
+# Current Tests
+
+The test suite protects several architectural invariants.
+
+Examples include:
+
+```text
+explicit human content remains human-originated
+
+observed content is not mislabeled as system inference
+
+system-inferred state requires confirmation
+
+rejected system inference does not enter active state
+
+system-triggered human cognition may remain human-originated
+
+WITHHOLD remains a valid action
+
+explicit composition request is respected
+
+move selection remains separate from realization
+```
+
+Run:
+
+```bash
+pytest -v
+```
+
+from the `prototype` directory.
+
+---
+
+# Running the Current Prototype
+
+From the `prototype` directory:
+
+```bash
+python cli.py
+```
+
+The current CLI asks the human to expose or classify some internal state manually.
+
+This is **not the intended final user experience**.
+
+It is an instrumentation interface for observing the controller before model-based state inference is introduced.
+
+---
+
+# Current UX Is Not the Product UX
+
+A mature Deliberation Room should not require normal users to answer questions such as:
+
+```text
+"Conceptual stability: low, moderate, or high?"
+```
+
+or manually classify:
+
+```text
+"I just generated a distinction."
+```
+
+Those controls currently exist because the prototype is testing state transitions explicitly.
+
+A future AI-backed system should infer candidate state from natural language and then expose only uncertainty or high-impact interpretations for correction when necessary.
+
+---
+
+# Next AI-Backed Prototype
+
+The next major implementation phase should introduce model-backed components behind explicit interfaces.
+
+Conceptually:
+
+```text
+NATURAL LANGUAGE
+        ↓
+MODEL-ASSISTED STATE EXTRACTION
+        ↓
+CONFIRMATION GATE WHEN NEEDED
+        ↓
+METACOGNITIVE CONTROLLER
+        ↓
+MODEL-ASSISTED MOVE REALIZATION
+        ↓
+HUMAN RESPONSE
+        ↓
+STATE-CHANGE INFERENCE
+        ↺
+```
+
+and, after composition transition:
+
+```text
+HUMAN JUDGMENT
+        ↓
+EVIDENCE ROUTER
+        ↓
+RHETORICAL SITUATION MODEL
+        ↓
+SOCIOLINGUISTIC / IDIOLECT MODEL
+        ↓
+GENRE / DISCIPLINARY MODEL
+        ↓
+RHETORICAL COMPILER
+        ↓
+SEMANTIC / INTERACTIONAL DRIFT CHECK
+        ↓
+EXACT FINAL ARTIFACT
+```
+
+---
+
+# AI Model Role
+
+A future implementation may use one or more AI models for:
+
+```text
+state extraction
+
+metacognitive operation inference
+
 candidate move generation
-+
-next-move selection
-+
-state update
+
+candidate move ranking
+
+linguistic analysis
+
+speech/text feature abstraction
+
+retrieval-query generation
+
+genre analysis
+
+rhetorical planning
+
+artifact generation
+
+semantic drift checking
+
+interactional drift checking
+
+provenance alignment
 ```
 
-This comparison matters because the architecture must outperform more than a bad baseline.
+The architecture does not require every function to use the same model.
+
+Some functions may eventually be suitable for:
+
+```text
+small local models
+
+rule-based components
+
+embedding models
+
+specialized classifiers
+
+retrieval systems
+
+frontier generative models
+```
+
+This decomposition is intentional.
 
 ---
 
-# First Task Type
+# Local / On-Device Hypothesis
 
-The initial implementation should use a bounded reasoning task where:
+A research hypothesis of Deliberation Room is that some controller and personalization functions may not require unrestricted frontier-model generation.
 
-- the human can begin with an incomplete claim;
-- a relevant assumption can be tested;
-- revisions can be observed;
-- there is no requirement for one predetermined answer;
-- and later independent explanation can be evaluated.
-
-A strong first domain is:
+Candidate local functions include:
 
 ```text
-short literary or argument interpretation
+idiolect feature extraction
+
+recent-state summarization
+
+operation classification
+
+provenance matching
+
+semantic similarity
+
+language-feature extraction
+
+reasoning-history updates
 ```
 
-because the interaction can naturally include:
+Whether these functions can perform adequately on smaller or local models is an empirical question.
+
+---
+
+# Final Target
+
+The final experience should eventually feel simple.
+
+A person should be able to say:
+
+> "Help me figure out what I actually mean and then tell me exactly what to say."
+
+The complexity should remain primarily behind the interface.
+
+Internally, the system may be modeling:
 
 ```text
-claim
+cognition
+metacognition
+rhetoric
+language
+culture
+genre
 evidence
-assumption
-counterexample
-revision
-distinction
+audience
+interaction
+provenance
 ```
 
-without requiring a large external knowledge base.
-
----
-
-# First Evaluation
-
-After the assisted interaction, remove the system.
-
-Ask the human to complete:
+Externally, the human should experience:
 
 ```text
-1. State the final claim in your own words.
-
-2. Explain what changed from your initial claim.
-
-3. Identify the most important distinction you made.
-
-4. Respond to one new counterexample.
-
-5. Identify anything you are still uncertain about.
+a small number of unusually useful questions
+        ↓
+recognition
+        ↓
+clearer judgment
+        ↓
+the exact artifact they actually needed
 ```
 
-This begins testing:
+The target is not maximum visible machinery.
+
+It is:
+
+> **maximum precision with minimum necessary intervention.**
+
+---
+
+# Prototype Status
+
+The current code should therefore be interpreted as:
 
 ```text
-INDEPENDENT EXPLANATION
-
-REASONING RECONSTRUCTION
-
-DISTINCTION RETENTION
-
-COUNTEREXAMPLE RESPONSE
-
-UNCERTAINTY REPRESENTATION
+EXECUTABLE CONTROL-CORE SCAFFOLD
 ```
 
----
+not:
 
-# What Not to Implement Yet
+```text
+COMPLETE DELIBERATION ROOM IMPLEMENTATION
+```
 
-Do not begin the prototype with:
+Its purpose is to make the architecture testable one component at a time.
 
-- persistent user profiles;
-- relationship memory;
-- demographic inference;
-- full sociolinguistic modeling;
-- vector databases;
-- complex agent orchestration;
-- a learned policy model;
-- fine-tuning;
-- automated authorship percentages;
-- education dashboards;
-- or production deployment.
-
-Those components may become useful later.
-
-They are not required to test the core claim.
-
----
-
-# Prototype Success
-
-The first prototype is successful if it becomes possible to test:
-
-> **Does explicit state-aware next-move selection change the quality and ownership of the human reasoning that follows?**
-
-It is not successful merely because:
-
-- the conversation feels intelligent;
-- the questions sound Socratic;
-- the final artifact is good;
-- or the controller is architecturally elaborate.
-
-The first implementation should be small enough that if a simple prompt performs just as well, the project can discover that quickly.
-
----
-
-# Engineering Principle
-
-> **Implement the smallest architecture capable of being wrong.**
-
-The purpose of the prototype is not to prove Deliberation Room.
-
-It is to turn the architecture into something that can fail clearly enough to learn from.
+The specification deliberately remains ahead of the executable prototype.
