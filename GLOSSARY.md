@@ -31,32 +31,125 @@ It represents evidence available through interaction.
 
 ---
 
-## Person / Reasoning Model
+## Metacognitive Process Model
 
-A provisional representation of interaction-relevant patterns in how this human appears to reason productively.
+A provisional representation of **how productive cognitive movement is currently occurring for this human in this task**.
 
-Possible elements include:
+Possible process dimensions include:
 
-- prior knowledge;
+- comparison and contrast;
+- analogy;
+- counterexample;
+- counterfactual testing;
+- classification;
+- abstraction;
+- concrete instantiation;
+- causal reasoning;
+- perspective shifting;
+- elimination;
+- constraint solving;
+- synthesis;
+- recursive correction;
+- evidence-first reasoning;
+- intuition-first hypothesis generation;
+- warrant construction;
+- invariant detection;
+- and movement between concrete and abstract representation.
+
+The model may also use relevant evidence about:
+
 - domain expertise;
+- prior knowledge;
+- previously productive representations;
 - abstraction tolerance;
-- preferred challenge forms;
-- analogical habits;
-- representation preferences;
-- revision patterns;
-- response to counterexamples;
-- and recurring reasoning strategies.
+- prior response to challenge modes;
+- recurring revision patterns;
+- and established reasoning strategies.
+
+However, these should remain contextual rather than becoming fixed cognitive types.
+
+The model's primary question is:
+
+> **How is useful thinking happening right now, and what kind of system move is most likely to support the next productive state change?**
+
+Metacognitive process state is therefore not merely descriptive.
+
+It can function as **live control data** for the next-move policy.
+
+For example:
+
+```text
+Observed task pattern:
+
+- counterexamples have produced substantive revision;
+- open-ended explanation has produced little change;
+- contrastive prompts have produced useful distinctions;
+- current abstraction tolerance appears high.
+```
+
+The controller may then prefer:
+
+```text
+one counterfactual
+one changed variable
+no supplied conclusion
+ask for the invariant
+```
 
 This model should remain:
 
 ```text
-contextual
+task-bounded
+uncertainty-aware
 corrigible
-task-relevant
-and minimally sufficient
+contextual
+minimally sufficient
 ```
 
-It should not become a covert personality or intelligence profile.
+It should not become a covert personality, intelligence, or learning-style classifier.
+
+---
+
+## Reasoning History
+
+A longer-term record of task-bounded metacognitive observations that may help predict useful future interventions.
+
+Examples may include:
+
+```text
+counterexamples repeatedly productive in argument testing
+analogy useful during exploration
+direct reflection useful during stabilization
+high abstraction tolerance in rhetoric tasks
+```
+
+Reasoning history is distinct from the Metacognitive Process Model.
+
+The Metacognitive Process Model represents:
+
+```text
+WHAT IS HAPPENING NOW
+```
+
+Reasoning history provides:
+
+```text
+PRIOR EVIDENCE THAT MAY INFORM WHAT TO TRY NEXT
+```
+
+Current-task evidence should generally outweigh older generalized patterns.
+
+Reasoning history should preserve:
+
+```text
+scope
+context
+confidence
+source
+correctability
+```
+
+and should not be treated as a fixed cognitive type.
 
 ---
 
@@ -123,7 +216,7 @@ Conceptually:
 ```text
 S_t = {
     Cognitive State,
-    Person / Reasoning Model,
+    Metacognitive Process Model,
     Linguistic / Sociolinguistic Model,
     Interaction Model
 }
@@ -666,24 +759,36 @@ Such observations should initially remain task-level and corrigible.
 
 ---
 
-## Metacognitive Profile
+## Metacognitive Summary
 
-A structured summary of reasoning patterns observed across one or more tasks.
+A structured description of reasoning patterns observed within a task or across explicitly scoped tasks.
 
-A metacognitive profile should not be treated as a fixed cognitive identity.
+Examples may include:
 
-Possible attributes include:
+> "Most substantive revisions in this task followed counterexamples."
 
-- productive challenge modes;
-- revision patterns;
-- evidence-use patterns;
-- uncertainty behavior;
-- and representation preferences.
+> "Claims emerged independently, while warrants required more elicitation."
 
-The human should be able to correct or limit generalization.
+> "Five system-proposed framings were revised before the final distinction stabilized."
+
+A Metacognitive Summary is primarily **descriptive feedback**.
+
+It is different from the Metacognitive Process Model, which operates during the interaction as live controller state.
+
+It is also different from Reasoning History, which may preserve selected observations for future prediction.
+
+A Metacognitive Summary should remain:
+
+```text
+contextual
+provisional
+corrigible
+non-diagnostic
+```
+
+It should not assign a fixed cognitive identity.
 
 ---
-
 ## Corrigibility
 
 The ability of the human to correct, reject, narrow, or delete important system representations.
