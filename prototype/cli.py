@@ -653,12 +653,9 @@ def run_deliberation() -> None:
             state.deliberation_complete = True
             break
 
-        print(realized.text)
+             print(realized.text)
 
-              if (
-            selected.action
-            == Action.TRANSITION_TO_COMPOSITION
-        ):
+        if selected.action == Action.TRANSITION_TO_COMPOSITION:
             print("\n=== Composition Handoff ===")
 
             print("\nWhat are you making?")
@@ -739,99 +736,20 @@ def run_deliberation() -> None:
 
             if result.drift_flags:
                 print("\n=== Drift Flags ===")
-
                 for flag in result.drift_flags:
                     print(f"- {flag}")
 
             state.deliberation_complete = True
             break
 
-        print("Please choose a number from 1 to 9.")
-
-    purpose = prompt_nonempty(
-        "\nWhat does this need to accomplish?\n> "
-    )
-
-    audience_description = prompt_nonempty(
-        "\nWho is this for?\n> "
-    )
-
-    relationship = input(
-        "\nWhat's your relationship to them? "
-        "(optional — press Enter to skip)\n> "
-    ).strip()
-
-    role = input(
-        "\nWhat role do they occupy here? "
-        "(optional — press Enter to skip)\n> "
-    ).strip()
-
-    audience = AudienceModel(
-        description=audience_description,
-        role=role or None,
-        relationship=relationship or None,
-    )
-
-    linguistic_profile = LinguisticProfile(
-        register=Register.CONVERSATIONAL,
-    )
-
-    planner = CompositionPlanner()
-    transposer = RhetoricalTransposer()
-
-    contract = planner.build_contract(
-        state=state,
-        artifact_type=artifact_type,
-        purpose=purpose,
-        audience=audience,
-        linguistic_profile=linguistic_profile,
-    )
-
-    result = transposer.compose(contract)
-
-    print("\n=== Draft ===\n")
-    print(result.text)
-
-    if result.drift_flags:
-        print("\n=== Drift Flags ===")
-        for flag in result.drift_flags:
-            print(f"- {flag}")
-
-    state.deliberation_complete = True
-    break
-
         if yes_no(
-            "\nDo you want the system to compose instead of continuing?"
+            "\nDo you want to continue deliberating?"
         ):
-            state.composition_requested = True
             state.next_turn()
             continue
 
-        human_text = prompt_nonempty("\nYou: ")
-
-        extract_and_review_human_input(
-            state=state,
-            text=human_text,
-            extractor=extractor,
-            gate=confirmation_gate,
-        )
-
-        apply_human_update(
-            state=state,
-            updater=updater,
-            system_action=selected.action,
-            system_event_id=system_event_id,
-            response_text=human_text,
-        )
-
-        if yes_no(
-            "\nAre you done deliberating?"
-        ):
-            state.deliberation_complete = True
-
-    print("\n=== Deliberation Complete ===")
-    print_state_summary(state)
-    print_trace(state)
+        state.deliberation_complete = True
+        break
 
 
 def main() -> None:
