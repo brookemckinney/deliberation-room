@@ -1,3 +1,25 @@
+# Deliberation Room interaction-state schema
+#
+# Status:
+#   Provisional research schema.
+#
+# Purpose:
+#   Represent the minimum structured state needed to support
+#   cognition-preserving next-move selection.
+#
+# Important:
+#   This schema does not imply that all fields should be populated,
+#   persisted, or inferred in every interaction.
+#
+#   Representations should remain:
+#   - task-relevant
+#   - uncertainty-aware
+#   - corrigible
+#   - minimally sufficient
+#   - provenance-preserving
+#
+#   Unknown should remain unknown.
+
 schema_version: "0.1"
 
 interaction_state:
