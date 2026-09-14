@@ -75,7 +75,7 @@ def yes_no(label: str) -> bool:
 
 
 def choose_stability() -> Stability:
-    """Ask the user for a provisional conceptual-stability state."""
+    """Ask how settled the human's current thinking feels."""
 
     options = {
         "1": Stability.UNKNOWN,
@@ -84,11 +84,11 @@ def choose_stability() -> Stability:
         "4": Stability.HIGH,
     }
 
-    print("\nConceptual stability")
-    print("1. unknown")
-    print("2. low")
-    print("3. moderate")
-    print("4. high")
+    print("\nHow settled does your thinking feel right now?")
+    print("1. I don't know yet")
+    print("2. Pretty unsettled")
+    print("3. I mostly know what I mean")
+    print("4. I'm clear on what I mean")
 
     while True:
         choice = input("Choose 1-4: ").strip()
@@ -113,15 +113,16 @@ def add_human_claim(state: DeliberationState) -> None:
 
     state.record_human_claim(starting_thought)
 
+
 def add_optional_assumption(state: DeliberationState) -> None:
-    """Optionally record an assumption already visible to the human."""
+    """Optionally record something the human already assumes may be true."""
 
     if not yes_no(
         "Is there something you're already assuming might be true?"
     ):
         return
 
-    assumption = prompt_nonempty("Assumption: ")
+    assumption = prompt_nonempty("What are you assuming? ")
 
     state.cognitive.assumptions.append(
         CognitiveObject(
@@ -144,7 +145,7 @@ def add_optional_assumption(state: DeliberationState) -> None:
 
 
 def add_optional_contradiction(state: DeliberationState) -> None:
-    """Optionally record an already-visible contradiction."""
+    """Optionally record a tension or conflict already visible."""
 
     if not yes_no(
         "Is there any tension, conflict, or part that doesn't quite fit yet?"
@@ -152,7 +153,7 @@ def add_optional_contradiction(state: DeliberationState) -> None:
         return
 
     contradiction = prompt_nonempty(
-        "Describe the contradiction/tension: "
+        "What's the tension or part that doesn't fit? "
     )
 
     state.cognitive.contradictions.append(
@@ -178,12 +179,14 @@ def add_optional_contradiction(state: DeliberationState) -> None:
 def add_optional_unresolved_question(
     state: DeliberationState,
 ) -> None:
-    """Optionally record an unresolved question."""
+    """Optionally record a question the human is still circling."""
 
-    if not yes_no("Is there a question you keep circling or can't answer yet?"):
+    if not yes_no(
+        "Is there a question you keep circling or can't answer yet?"
+    ):
         return
 
-    question = prompt_nonempty("Unresolved question: ")
+    question = prompt_nonempty("What's the question? ")
 
     state.cognitive.unresolved_questions.append(
         CognitiveObject(
@@ -206,12 +209,15 @@ def add_optional_unresolved_question(
 
 
 def add_optional_uncertainty(state: DeliberationState) -> None:
-    """Optionally record uncertainty that should remain explicit."""
+    """Optionally preserve something the human genuinely does not know."""
 
-    if not yes_no("Is there anything you genuinely don't know yet and don't want the system to pretend you know?"):
+    if not yes_no(
+        "Is there anything you genuinely don't know yet and don't want "
+        "the system to pretend you know?"
+    ):
         return
 
-    uncertainty = prompt_nonempty("Uncertainty: ")
+    uncertainty = prompt_nonempty("What don't you know yet? ")
 
     state.cognitive.uncertainty.append(
         CognitiveObject(
@@ -239,9 +245,11 @@ def collect_initial_state() -> DeliberationState:
     state = DeliberationState()
 
     print("\n=== Deliberation Room: Minimal Prototype ===")
-     print(
-    "\nBring an unfinished thought, tension, question, decision, interpretation, "
-    "or something you need to say. You do not need to turn it into a claim first."
+
+    print(
+        "\nBring an unfinished thought, tension, question, decision, "
+        "interpretation, or something you need to say. "
+        "You do not need to turn it into a claim first."
     )
 
     add_human_claim(state)
@@ -253,7 +261,9 @@ def collect_initial_state() -> DeliberationState:
     state.cognitive.conceptual_stability = choose_stability()
 
     state.composition_requested = yes_no(
-    "\nDo you already know what you mean and just want help turning it into the exact thing to write or say?"    )
+        "\nDo you already know what you mean and just want help turning "
+        "it into the exact thing to write or say?"
+    )
 
     return state
 
