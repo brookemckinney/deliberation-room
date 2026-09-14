@@ -563,7 +563,7 @@ A system proposal should not automatically enter the human cognitive state as es
 
 ---
 
-## Recognition
+## Recognition (Cognitive Uptake)
 
 Evidence that the human has meaningfully encountered a system proposal rather than merely receiving it.
 
@@ -813,7 +813,7 @@ The smallest interactional move that creates a useful social opening without unn
 
 ---
 
-## Recognition
+## Relational Recognition
 
 In relational contexts, recognition means communicating that a person is noticed, remembered, understood, or granted a meaningful position in the interaction.
 
