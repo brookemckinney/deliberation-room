@@ -1,69 +1,503 @@
 # Next-Move Policy
 
-The Next-Move Policy is the decision mechanism at the center of Deliberation Room.
+The next-move policy is the control mechanism for Engine 1: **Metacognitive Deliberation**.
 
-It consumes the current interaction state and selects an intervention intended to create the most useful next cognitive possibility for the human.
+Its optimization target is not:
 
-Its central question is:
+> What should the system say next?
 
-> **Given what is currently represented about the human, the reasoning state, the language environment, and the interaction, what should the human be able to do next?**
+It is:
 
-This differs fundamentally from a conventional conversational objective:
+> **What cognitive operation should remain with the human next, and what minimally sufficient system move is most likely to elicit it?**
 
-> **What should the model say next?**
+The policy therefore selects more than a conversational response.
 
-The distinction is architectural.
-
-Deliberation Room does not begin by assuming that the correct response to human input is more generated content.
-
-It first determines **what kind of intervention, if any, should occur**.
-
----
-
-## Policy Inputs
-
-At time `t`, the policy receives the current interaction state:
-
-```text
-S_t = {
-    C_t,
-    P_t,
-    L_t,
-    I_t
-}
-```
-
-where:
-
-```text
-C_t = Cognitive State Model
-P_t = Person / Reasoning Model
-L_t = Linguistic / Sociolinguistic Model
-I_t = Interaction Model
-```
-
-It also receives:
-
-```text
-G_t = current human goal
-K   = governing principles
-H_t = relevant interaction history or compressed state
-```
+It selects an **intervention into an evolving human reasoning process**.
 
 Conceptually:
 
 ```text
-A_t = π(S_t, G_t, K, H_t)
+CURRENT HUMAN CONTRIBUTION
+            │
+            ▼
+┌─────────────────────────────────────────┐
+│ COGNITIVE STATE                        │
+│                                         │
+│ What currently appears to be           │
+│ understood, assumed, distinguished,    │
+│ warranted, contradicted, or uncertain? │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ METACOGNITIVE PROCESS STATE            │
+│                                         │
+│ Which cognitive operations are         │
+│ producing useful movement?             │
+│                                         │
+│ compare • analogize • counterexample   │
+│ instantiate • abstract • classify      │
+│ causal-chain • perspective-shift       │
+│ synthesize • revise • find invariant   │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ DISCIPLINARY / EPISTEMIC CONDITIONS    │
+│                                         │
+│ What counts as responsible reasoning   │
+│ for this kind of problem?              │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ LINGUISTIC / SOCIOLINGUISTIC MODEL     │
+│                                         │
+│ What will candidate language mean      │
+│ in this discourse environment?         │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ INTERACTION MODEL                      │
+│                                         │
+│ What will the move DO here, between    │
+│ these participants, for this purpose?  │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+             NEXT-MOVE POLICY
+                     │
+                     ▼
+       SELECT COGNITIVE OPERATION
+                     │
+                     ▼
+       SELECT INTERACTIONAL MOVE
+                     │
+                     ▼
+       REALIZE MINIMAL UTTERANCE
+                     │
+                     ▼
+               HUMAN RESPONDS
+                     │
+                     ▼
+        MEASURE / INFER STATE CHANGE
+                     │
+                     └───────────────↺
 ```
 
-where:
+This distinction is important:
 
 ```text
-π   = next-move policy
-A_t = selected action
+COGNITIVE OPERATION
+=
+what the human is being left to do
+
+SYSTEM MOVE
+=
+what the system does to make that operation possible
 ```
 
-This notation is conceptual rather than an implemented algorithm.
+For example:
+
+```text
+desired human operation:
+identify an invariant
+
+system move:
+counterfactual
+
+realization:
+"Would your argument still hold if the law itself were just?"
+```
+
+The system should not respond:
+
+```text
+"The deeper issue is authority rather than the morality of the law."
+```
+
+if identifying that distinction is the useful cognitive work available to the human.
+
+The policy should preserve that work.
+
+---
+
+## Metacognitive State as Control Data
+
+The Metacognitive Process Model is not merely a record for later analytics.
+
+It should directly condition policy.
+
+Suppose interaction history suggests:
+
+```text
+open-ended explanation
+→ little representational change
+
+counterexample
+→ claim revision
+
+contrastive comparison
+→ new distinction
+
+direct system proposal
+→ frequent human rejection
+```
+
+The controller should not treat those observations as trivia.
+
+They alter the expected value of candidate interventions.
+
+A simplified policy might reason:
+
+```text
+current cognitive need:
+test whether variable X is actually causal
+
+current task evidence:
+counterfactual testing has been productive
+
+disciplinary requirement:
+alternative explanations should be tested
+
+substitution risk:
+high if system names alternative explanation
+
+therefore:
+
+desired human operation:
+isolate variable
+
+system move:
+single-variable counterfactual
+
+realization constraint:
+do not name likely conclusion
+```
+
+This is the sense in which Deliberation Room can **prompt itself**.
+
+The controller can construct an internal instruction such as:
+
+```text
+The human has revised successfully after single-variable
+counterfactuals in this task.
+
+Use one counterfactual.
+
+Preserve the current abstraction level.
+
+Change only the disputed variable.
+
+Do not provide the resulting distinction.
+
+Ask the human what remains true.
+```
+
+The instruction is generated from interaction evidence rather than from a fixed tutoring script.
+
+---
+
+## Candidate Cognitive Operations
+
+Candidate operations may include:
+
+```text
+notice
+retrieve
+clarify
+compare
+contrast
+classify
+instantiate
+abstract
+analogize
+generate counterexample
+test counterfactual
+identify assumption
+construct warrant
+evaluate evidence
+isolate variable
+trace causal chain
+shift perspective
+identify invariant
+synthesize
+revise
+reject
+stabilize judgment
+```
+
+This set is extensible.
+
+A domain may supply additional operations through disciplinary walking rules.
+
+For example:
+
+```text
+literary analysis
+→ counterreading
+→ textual-evidence testing
+→ formal analysis
+
+history
+→ source evaluation
+→ chronology testing
+→ competing-cause analysis
+→ contingency reasoning
+
+science
+→ mechanism construction
+→ confound identification
+→ falsification
+
+design
+→ stakeholder shift
+→ constraint testing
+→ tradeoff evaluation
+
+rhetoric
+→ audience modeling
+→ warrant testing
+→ kairotic evaluation
+→ rhetorical constraint analysis
+```
+
+The controller should therefore distinguish:
+
+```text
+GENERAL METACOGNITIVE OPERATIONS
+```
+
+from:
+
+```text
+DOMAIN-SPECIFIC EPISTEMIC OPERATIONS
+```
+
+while allowing both to affect the same next-move policy.
+
+---
+
+## Productive State Change
+
+The policy requires a definition of what counts as useful movement.
+
+A response should not be considered productive merely because it is:
+
+```text
+longer
+more articulate
+more agreeable
+more confident
+more similar to the model's preferred answer
+```
+
+Candidate indicators of productive state change include:
+
+```text
+new distinction
+assumption exposed
+warrant articulated
+counterexample generated
+claim revised
+claim rejected
+uncertainty localized
+causal variable isolated
+perspective incorporated
+evidence re-evaluated
+abstraction achieved
+concrete instance produced
+contradiction resolved
+contradiction preserved intentionally
+judgment stabilized
+```
+
+Importantly:
+
+> **Rejection of the system can be productive state change.**
+
+If the system proposes a distinction and the human rejects it for a reason that clarifies the model, that interaction produced information.
+
+The policy should therefore learn from:
+
+```text
+acceptance
+revision
+rejection
+correction
+non-response
+confusion
+productive elaboration
+```
+
+rather than optimizing for user agreement.
+
+---
+
+## Intervention Value
+
+A future learned controller could estimate the value of candidate moves using something conceptually like:
+
+```text
+intervention value
+=
+expected cognitive progress
+× expected information gain
+× contextual appropriateness
+× disciplinary validity
+-
+cognitive substitution risk
+-
+interactional cost
+-
+intrusion cost
+```
+
+This is not currently presented as a validated scoring function.
+
+It is an architectural hypothesis describing the variables the controller should eventually learn to balance.
+
+### Expected cognitive progress
+
+How likely is the move to produce a useful change in the human's representation?
+
+### Expected information gain
+
+How much will the response help the system distinguish between competing models of the human's reasoning?
+
+### Contextual appropriateness
+
+Is the move appropriate for this participant, relationship, role, discourse environment, and moment?
+
+### Disciplinary validity
+
+Does the move preserve what counts as legitimate reasoning in the relevant domain?
+
+### Cognitive substitution risk
+
+How likely is the system to perform the useful cognitive operation instead of leaving it to the human?
+
+### Interactional cost
+
+Could the move create unnecessary face threat, defensiveness, confusion, distance, or other social cost?
+
+### Intrusion cost
+
+Does the system need additional personal information to make this move, and is that information actually necessary?
+
+The preferred move is not necessarily the one that maximizes challenge.
+
+It is the move that creates the best conditions for the **human's next useful cognitive act**.
+
+---
+
+## Exploration and Adaptation
+
+The controller should not permanently exploit whatever worked first.
+
+If counterexamples were productive twice, that does not establish:
+
+```text
+THIS PERSON THINKS THROUGH COUNTEREXAMPLES
+```
+
+Instead, the system has evidence that:
+
+```text
+counterexamples have recently been productive
+for this person
+in this task
+under these conditions
+```
+
+A mature controller should balance:
+
+```text
+EXPLOITATION
+use operations currently supported by evidence
+
+EXPLORATION
+occasionally test plausible alternatives
+
+CORRECTION
+update quickly when the human rejects the model
+```
+
+This prevents metacognitive personalization from hardening into a self-fulfilling cognitive profile.
+
+---
+
+## Minimal Intervention
+
+When several moves have similar expected value, prefer the move that performs the least cognitive work on behalf of the human.
+
+Conceptually:
+
+```text
+Do not provide a distinction
+if a comparison can elicit it.
+
+Do not provide a counterargument
+if a counterexample can expose the weakness.
+
+Do not provide the abstraction
+if two concrete cases can allow the human to derive it.
+
+Do not provide a judgment
+if the human already has enough information to make it.
+```
+
+This is not a prohibition on system contribution.
+
+The system may provide:
+
+```text
+facts
+examples
+definitions
+research
+alternative cases
+disciplinary conventions
+external evidence
+```
+
+when those are inputs to reasoning rather than substitutes for the judgment being developed.
+
+The relevant question is:
+
+> **What information should the system supply, and what cognitive operation should remain with the human?**
+
+---
+
+## Composition Transition
+
+Generation is not forbidden.
+
+It is a distinct architectural phase.
+
+The next-move policy may transition to Engine 2 when:
+
+```text
+the relevant judgment is sufficiently stable
+OR
+the human explicitly requests composition
+OR
+further deliberation has low expected value
+OR
+the task itself requires immediate realization
+```
+
+The transition should preserve a composition handoff containing, where relevant:
+
+```text
+human-established claims
+human-recognized system proposals
+human revisions
+material uncertainty
+rejected framings
+relevant evidence
+conceptual provenance
+interactional objective
+```
+
+Engine 2 may then perform substantial linguistic work without pretending that linguistic generation and conceptual authorship are the same thing.
 
 ---
 
