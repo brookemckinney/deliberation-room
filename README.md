@@ -534,24 +534,112 @@ This model represents the current deliberative state, including:
 
 It does not claim direct access to cognition. It represents what the interaction currently provides evidence for.
 
-### 2. Person / Reasoning Model
+### 2. Metacognitive Process Model
 
-**How does this human productively think?**
+How is this human productively thinking **right now**, and what form of cognitive support is most likely to produce the next useful state change?
 
-This model represents interaction-relevant patterns such as:
+This model represents the observed process of reasoning rather than merely the content of the reasoning.
 
-- domain expertise
-- prior knowledge
-- analogical habits
-- abstraction tolerance
-- preferred challenge modes
-- response to counterexamples
-- preferred representations
-- previously established distinctions
+Candidate process dimensions include:
 
-Its purpose is not demographic or personality classification.
+- comparison and contrast;
+- analogy;
+- counterexample;
+- counterfactual testing;
+- classification;
+- abstraction;
+- concrete instantiation;
+- causal chaining;
+- perspective shifting;
+- elimination;
+- constraint solving;
+- synthesis;
+- recursive correction;
+- evidence-first reasoning;
+- intuition-first hypothesis generation;
+- warrant construction;
+- invariant detection;
+- and movement between concrete and abstract representation.
 
-Its purpose is to help select forms of elicitation that allow this particular human to reason productively.
+It may also use relevant evidence about:
+
+- domain expertise;
+- prior knowledge;
+- previously productive representations;
+- abstraction tolerance in the current task;
+- prior response to particular challenge modes;
+- recurring revision patterns;
+- and established reasoning strategies.
+
+But these should not be treated as fixed cognitive types.
+
+The primary object is the **current reasoning process**.
+
+For example, the model might represent:
+
+```text
+CURRENT TASK EVIDENCE
+
+contrastive prompts:
+productive
+
+counterexamples:
+produced substantive revision
+
+open-ended explanation:
+low information gain
+
+current abstraction tolerance:
+high
+
+current likely next need:
+identify invariant across cases
+```
+
+That state can directly condition the next system move.
+
+For example:
+
+```text
+CONTROLLER INSTRUCTION
+
+Use one counterfactual.
+
+Change only one variable.
+
+Do not name the distinction.
+
+Ask what remains true across both cases.
+```
+
+This is a central architectural claim:
+
+> **Metacognitive evidence is not merely feedback generated after deliberation. It is live control data for the next-move policy.**
+
+The system may therefore adapt not simply to what the human knows, but to **how useful cognitive movement is currently occurring**.
+
+Human correction remains essential.
+
+An observation such as:
+
+> "Counterexamples were productive in this argument task."
+
+should not silently become:
+
+> "This person is a counterexample thinker."
+
+The model should preserve:
+
+```text
+task
+context
+evidence
+confidence
+scope
+correctability
+```
+
+A longer-term person-specific reasoning history may help predict useful moves, but it should remain subordinate to evidence from the present task.
 
 ### 3. Linguistic / Sociolinguistic Model
 
@@ -633,7 +721,7 @@ Conceptually:
 CURRENT INTERACTION STATE
         │
         ├── Cognitive State
-        ├── Person / Reasoning
+        ├── Metacognitive process
         ├── Linguistic / Sociolinguistic
         └── Interaction
         │
