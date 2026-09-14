@@ -584,14 +584,13 @@ def extract_and_review_human_input(
 
 def run_deliberation() -> None:
     """Run the multi-turn Deliberation Room loop."""
-
     state = collect_initial_state()
-    
-controller = NextMoveController()
-realizer = MoveRealizer()
-updater = StateUpdater()
-extractor = ManualStateExtractor()
-confirmation_gate = ConfirmationGate()
+
+    controller = NextMoveController()
+    realizer = MoveRealizer()
+    updater = StateUpdater()
+    extractor = ManualStateExtractor()
+    confirmation_gate = ConfirmationGate()
 
     while not state.deliberation_complete:
         print_state_summary(state)
@@ -649,20 +648,20 @@ confirmation_gate = ConfirmationGate()
 
         human_text = prompt_nonempty("\nYou: ")
 
-extract_and_review_human_input(
-    state=state,
-    text=human_text,
-    extractor=extractor,
-    gate=confirmation_gate,
-)
+        extract_and_review_human_input(
+            state=state,
+            text=human_text,
+            extractor=extractor,
+            gate=confirmation_gate,
+        )
 
-    apply_human_update(
-    state=state,
-    updater=updater,
-    system_action=selected.action,
-    system_event_id=system_event_id,
-    response_text=human_text,
-)
+        apply_human_update(
+            state=state,
+            updater=updater,
+            system_action=selected.action,
+            system_event_id=system_event_id,
+            response_text=human_text,
+        )
 
         if yes_no(
             "\nAre you done deliberating?"
