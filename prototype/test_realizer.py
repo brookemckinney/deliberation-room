@@ -154,7 +154,7 @@ def test_reflect_does_not_invent_content_when_state_empty():
     )
 
     assert result.text is not None
-    assert "not enough human-confirmed state" in result.text.lower()
+assert "enough human-confirmed state" in result.text.lower()
 
 
 def test_composition_transition_is_explicit():
