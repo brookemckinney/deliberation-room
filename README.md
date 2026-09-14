@@ -32,30 +32,109 @@ UPDATE THE MODELS
 Free-form answer or artifact generation is not the default objective of this loop. The system may still generate the linguistic realization of a selected move—for example, a clarification, challenge, reflection, or counterexample—but generation is subordinate to the next-move policy rather than serving as the policy itself.
 ---
 
+
 ## Conceptual Architecture
 
-Deliberation Room combines four interacting models.
+Deliberation Room contains two coupled engines.
 
 ```text
+                 HUMAN CONTRIBUTION
+                         │
+                         ▼
+┌───────────────────────────────────────────────────────────┐
+│ ENGINE 1 — METACOGNITIVE DELIBERATION                    │
+│                                                           │
+│ What does this human currently think?                     │
+│ How are they productively thinking through it?            │
+│ What cognitive operation should remain with them next?    │
+│                                                           │
+│ notice → model → test → revise → distinguish → judge      │
+└───────────────────────────┬───────────────────────────────┘
+                            │
+                            ▼
+                  STABILIZED HUMAN JUDGMENT
+                            │
+                            ▼
+┌───────────────────────────────────────────────────────────┐
+│ ENGINE 2 — RHETORICAL COMPILATION                        │
+│                                                           │
+│ Given what this human means, what exactly should this     │
+│ human write or say to this audience, in this situation?   │
+│                                                           │
+│ rhetoric + audience + interaction + sociolinguistics      │
+│ + observed speech/text behavior + genre + evidence        │
+└───────────────────────────┬───────────────────────────────┘
+                            │
+                            ▼
+                    EXACT FINAL UTTERANCE
+```
+
+The two engines solve different problems.
+
+Engine 1 asks:
+
+> **What should the human be able to do next?**
+
+Engine 2 asks:
+
+> **Given the human judgment that emerged, what exactly should this human say or write here?**
+
+The architecture is cognition-preserving **without being anti-generation**.
+
+Its objective is not to keep the AI from eventually producing language.
+
+Its objective is to preserve the distinction between:
+
+```text
+DEVELOPING THE JUDGMENT
+```
+
+and:
+
+```text
+REALIZING THAT JUDGMENT AS LANGUAGE
+```
+
+A mature Deliberation Room may therefore produce the entire final message, email, essay, memo, explanation, or speech.
+
+What matters is that the substantive judgment embodied by that artifact remains inspectable and appropriately attributable.
+
+---
+
+## Engine 1 — Metacognitive Deliberation
+
+Deliberation Room does not merely model **what** the human appears to think.
+
+It also models **how useful cognitive movement is currently occurring**.
+
+Conceptually:
+
+```text
+HUMAN UTTERANCE
+        │
+        ▼
 ┌─────────────────────────────────────────┐
 │ 1. COGNITIVE STATE MODEL               │
 │                                         │
 │ What does the human currently appear   │
 │ to understand?                          │
 │                                         │
-│ distinctions • assumptions • warrants  │
-│ contradictions • uncertainty • gaps    │
-│ evidence • conceptual stability        │
+│ claims • distinctions • assumptions    │
+│ warrants • contradictions • evidence   │
+│ uncertainty • conceptual stability     │
 └────────────────────┬────────────────────┘
                      │
 ┌────────────────────▼────────────────────┐
-│ 2. PERSON / REASONING MODEL            │
+│ 2. METACOGNITIVE PROCESS MODEL         │
 │                                         │
-│ How does this human productively think? │
+│ How is productive thinking currently   │
+│ happening for this human?               │
 │                                         │
-│ expertise • analogical habits          │
-│ abstraction tolerance • preferred      │
-│ challenge modes • prior knowledge      │
+│ comparison • analogy • counterexample  │
+│ abstraction • concrete instantiation   │
+│ causal reasoning • perspective shift   │
+│ elimination • synthesis • classification│
+│ recursive correction • evidence-first  │
 └────────────────────┬────────────────────┘
                      │
 ┌────────────────────▼────────────────────┐
@@ -64,12 +143,9 @@ Deliberation Room combines four interacting models.
 │ How does meaning operate for this human │
 │ in this discourse environment?         │
 │                                         │
-│ idiolect • register • dialect           │
-│ discourse community • pragmatics       │
-│ indexicality • stance • humor           │
-│ role language • generational norms     │
-│ code-switching • shared vocabulary     │
-│ relational language history            │
+│ idiolect • register • dialect • stance │
+│ pragmatics • humor • discourse norms   │
+│ role language • shared vocabulary      │
 └────────────────────┬────────────────────┘
                      │
 ┌────────────────────▼────────────────────┐
@@ -79,64 +155,362 @@ Deliberation Room combines four interacting models.
 │ THESE people, for THIS purpose?         │
 │                                         │
 │ power • status • familiarity • history │
-│ face • belonging • audience • setting  │
-│ stakes • relational distance           │
-│ permissions • social risk              │
-│ interactional expectations             │
+│ face • belonging • audience • stakes   │
+│ permissions • response latitude        │
 └────────────────────┬────────────────────┘
                      │
-              NEXT-MOVE POLICY
+                     ▼
+          METACOGNITIVE NEXT-MOVE POLICY
                      │
-       ┌─────────────┼─────────────┐
-       ↓             ↓             ↓
-    clarify       challenge     counterexample
-    distinguish   reflect       withhold
-    reframe       test          ask
+          ┌──────────┼───────────┐
+          ▼          ▼           ▼
+       clarify    challenge   counterexample
+       compare    reflect     instantiate
+       abstract   distinguish perspective-shift
+       test       withhold    ask
                      │
-                     ↓
+                     ▼
                HUMAN RESPONDS
                      │
-                     ↓
-              MODELS UPDATE ↺
+                     ▼
+             ALL MODELS UPDATE ↺
 ```
 
-The four models are analytically distinguishable but interactionally dependent.
+The second model is not merely a static preference profile.
 
-A cognitive move cannot always be evaluated independently of the language through which it is realized, the social meaning of that language, the relationship between participants, or the human's established reasoning practices.
+It functions as **live control data** for the system.
 
----
-## Start Here
+For example, the system might infer:
 
-Deliberation Room is specified across several layers. Readers can enter the project according to what they want to inspect.
+```text
+Current task evidence:
 
-| If you want to understand... | Start with |
-|---|---|
-| The project's governing commitments | [Governing Principles](GOVERNING_PRINCIPLES.md) |
-| The four interacting models | [Architecture](architecture/) |
-| How the system chooses what to do next | [Next-Move Policy](architecture/next-move-policy.md) |
-| How human and system contributions are distinguished | [Provenance](architecture/provenance.md) |
-| The provisional state representations | [Schemas](schemas/) |
-| Concrete interaction traces | [Examples](examples/) |
-| The research claims to be tested | [Research Hypotheses](research/hypotheses.md) |
-| How the architecture could be evaluated | [Evaluation](research/evaluation.md) |
-| Privacy and misuse risks | [Threat Model](research/threat-model.md) |
-| Relevant intellectual and technical precedents | [Related Work](research/related-work.md) |
-| Educational applications | [Education](applications/education.md) |
-| Deliberation before communication | [Communication](applications/communication.md) |
-| Social and relational move selection | [Relational Interaction](applications/relational-interaction.md) |
-| Project-specific terminology | [Glossary](GLOSSARY.md) |
+- contrastive questions have produced useful distinctions;
+- open-ended explanation has produced little state change;
+- counterfactual testing has produced revision;
+- abstraction tolerance is currently high.
+```
 
-### How the application files differ
+That state can alter the next system instruction:
 
-The application documents are related but intentionally distinct:
+```text
+Prefer one contrastive or counterfactual move.
 
-- **Education** asks how AI can support learning without silently replacing the cognition an assessment is intended to develop or evidence.
-- **Communication** asks how a human can stabilize what they mean before rhetorically transposing that judgment for an audience.
-- **Relational Interaction** asks what a communicative move *does* within a particular relationship, role, power structure, discourse environment, and moment.
+Change only one variable.
 
-The architecture is not presented as empirically validated. The files above distinguish architectural commitments, implementation proposals, research hypotheses, and evaluation questions wherever possible.
+Do not supply the distinction.
+
+Allow the human to identify what remains invariant.
+```
+
+The system is therefore, in effect, **prompting itself about how to help this particular human continue thinking**.
+
+These observations remain provisional, task-bounded, and corrigible.
+
+They are not fixed cognitive "types."
 
 ---
+
+## Engine 2 — Rhetorical Compilation
+
+Once the relevant human judgment is sufficiently stable—or the human explicitly requests composition—the optimization problem changes.
+
+The question becomes:
+
+> **What exactly should this human say or write, to this audience, for this purpose, in this situation?**
+
+Conceptually:
+
+```text
+STABILIZED HUMAN JUDGMENT
+            │
+            ▼
+┌─────────────────────────────────────────┐
+│ RHETORICAL SITUATION                    │
+│                                         │
+│ exigence • audience • purpose           │
+│ ethos • pathos • logos • kairos         │
+│ constraints • available means           │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ INTERACTIONAL CONDITIONS               │
+│                                         │
+│ role • power • status • familiarity    │
+│ history • face • belonging • stakes    │
+│ response latitude • social risk        │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ LINGUISTIC / SOCIOLINGUISTIC EVIDENCE  │
+│                                         │
+│ idiolect • register • dialect • stance │
+│ pragmatics • humor • code-switching    │
+│ discourse community • role language    │
+│ generational norms • shared vocabulary │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ OBSERVED SPEECH / TEXT BEHAVIOR        │
+│                                         │
+│ actual lexical choices • cadence       │
+│ sentence length • discourse markers    │
+│ punctuation • explicitness • repair    │
+│ prior successful realizations          │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ GENRE / DISCIPLINARY CONVENTIONS       │
+│                                         │
+│ text • email • essay • memo • speech   │
+│ discussion • feedback • proposal       │
+│ disciplinary rhetorical expectations  │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│ RELEVANT EXTERNAL EVIDENCE             │
+│                                         │
+│ facts • sources • terminology          │
+│ conventions • precedents • context     │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+              RHETORICAL COMPILER
+                     │
+                     ▼
+            SEMANTIC / DRIFT CHECK
+                     │
+                     ▼
+              EXACT FINAL OUTPUT
+```
+
+Classical rhetoric functions here as more than a vocabulary list.
+
+It provides part of the decision structure for composition:
+
+```text
+EXIGENCE
+Why must something be said?
+
+AUDIENCE
+Who must receive it?
+
+PURPOSE
+What should the utterance accomplish?
+
+ETHOS
+What speaker-position should the language establish?
+
+PATHOS
+What affective conditions matter?
+
+LOGOS
+What reasoning must be visible?
+
+KAIROS
+Why this move, in this form, at this moment?
+
+CONSTRAINTS
+What limits the available rhetorical choices?
+
+AVAILABLE MEANS
+Which linguistic and rhetorical resources can this speaker
+appropriately use?
+```
+
+These variables interact with sociolinguistic and empirical language evidence.
+
+The architecture is therefore not:
+
+```text
+reason
+→ generate generic prose
+→ apply tone
+```
+
+It is:
+
+```text
+human judgment
+× rhetorical situation
+× audience
+× relationship
+× discourse community
+× idiolect
+× observed language behavior
+× genre
+× evidence
+        ↓
+situated rhetorical realization
+```
+
+---
+
+## Compression Is a Valid Rhetorical Outcome
+
+A sophisticated model does not imply a long output.
+
+Sometimes extensive deliberation and audience modeling should produce radical compression.
+
+For example:
+
+```text
+INTERNAL PROBLEM
+How do I explain why this person belongs inside the idea?
+
+DELIBERATIVE DISCOVERY
+The important claim is not the architecture itself.
+The important claim is affection for the way this person thinks
+about and cares for other people.
+
+RHETORICAL CONDITIONS
+intimate relationship
+high shared context
+low need for exposition
+belonging is the communicative objective
+
+OUTPUT
+"You're in it because I love the way your mind loves people."
+```
+
+The sentence is effective not because the system generated prettier language.
+
+It is effective because deliberation identified the relevant human meaning and rhetorical compilation recognized that **compression preserved the strongest relational act**.
+
+---
+
+## Disciplinary Walking Rules
+
+The metacognitive controller can also be conditioned by disciplinary epistemology.
+
+The general loop remains:
+
+```text
+notice
+→ model
+→ test
+→ revise
+→ perspective
+→ stabilize
+→ express
+```
+
+but the responsible cognitive moves vary by domain.
+
+For literary analysis:
+
+```text
+textual evidence
+interpretation
+counterreading
+ambiguity
+form
+```
+
+For history:
+
+```text
+source
+perspective
+causation
+chronology
+contingency
+competing explanation
+```
+
+For science:
+
+```text
+observation
+hypothesis
+mechanism
+evidence
+confound
+falsification
+```
+
+For design:
+
+```text
+stakeholder
+constraint
+tradeoff
+iteration
+consequence
+```
+
+For ethics:
+
+```text
+stakeholders
+values
+duties
+consequences
+competing principles
+uncertainty
+```
+
+For rhetoric:
+
+```text
+audience
+exigence
+ethos
+pathos
+logos
+kairos
+constraints
+warrants
+language
+```
+
+The architecture does not merely switch knowledge bases.
+
+It changes **what counts as responsible cognitive movement in the domain**.
+
+---
+
+## Provenance Across Both Engines
+
+The complete architecture should preserve at least three different forms of contribution:
+
+```text
+CONCEPTUAL PROVENANCE
+Who developed the judgment?
+
+METACOGNITIVE PROVENANCE
+Which interventions and reasoning processes produced meaningful change?
+
+LINGUISTIC PROVENANCE
+Who supplied the final verbal realization?
+```
+
+This permits outcomes such as:
+
+```text
+concept:
+predominantly human-developed
+
+deliberative support:
+system counterexamples + human revisions
+
+organization:
+jointly developed
+
+final wording:
+primarily system-generated
+```
+
+without collapsing the entire artifact into:
+
+```text
+AI
+vs.
+human
+```
+
+The eventual output can therefore be highly system-assisted linguistically while remaining traceable to human judgment.
+
 ## The Four Models
 
 ### 1. Cognitive State Model
