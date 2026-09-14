@@ -25,8 +25,7 @@ UPDATE THE MODELS
         ↺
 ```
 
-Generation is not in that loop by default.
-
+Free-form answer or artifact generation is not the default objective of this loop. The system may still generate the linguistic realization of a selected move—for example, a clarification, challenge, reflection, or counterexample—but generation is subordinate to the next-move policy rather than serving as the policy itself.
 ---
 
 ## Conceptual Architecture
