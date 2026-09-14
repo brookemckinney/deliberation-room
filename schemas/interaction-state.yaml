@@ -5,7 +5,8 @@
 #
 # Purpose:
 #   Represent the minimum structured state needed to support
-#   cognition-preserving next-move selection.
+#   cognition-preserving next-move selection and situated
+#   rhetorical compilation.
 #
 # Important:
 #   This schema does not imply that all fields should be populated,
@@ -20,7 +21,7 @@
 #
 #   Unknown should remain unknown.
 
-schema_version: "0.2"
+schema_version: "0.3"
 
 interaction_state:
 
@@ -301,56 +302,623 @@ interaction_state:
   # ============================================================
   # MODEL 3 — LINGUISTIC / SOCIOLINGUISTIC
   #
-  # How does language operate for this human in this discourse
+  # How does meaning operate for this human in this discourse
   # environment?
   #
-  # These representations concern meaning and communicative
-  # practice, not merely preferred "tone."
+  # This is NOT a generic tone or style profile.
+  #
+  # The model may combine:
+  #
+  # - observed speech/text behavior
+  # - idiolect
+  # - local semantics
+  # - register
+  # - stance
+  # - pragmatics
+  # - discourse-community conventions
+  # - role language
+  # - humor and irony
+  # - code-switching
+  # - generational/cohort evidence
+  # - relational language history
+  #
+  # Critical distinction:
+  #
+  # UNDERSTAND A FORM
+  # does not imply
+  # HAVE PERMISSION TO PERFORM A FORM.
   # ============================================================
 
   linguistic_sociolinguistic_model:
 
-    idiolect_features: []
+    observed_language_evidence:
 
-    local_vocabulary: []
+      # References to relevant speech/text evidence.
+      #
+      # An implementation should not automatically retain raw
+      # language indefinitely. Where possible, abstracted features
+      # may be stored with provenance back to source evidence.
 
-    semantic_distinctions: []
+      samples: []
+
+      lexical_patterns:
+
+        frequent_terms: []
+
+        preferred_terms: []
+
+        avoided_terms: []
+
+        jargon_or_domain_terms: []
+
+        recurring_phrases: []
+
+        local_shorthand: []
+
+        lexical_density:
+          tendency: null
+          confidence: null
+
+        lexical_specificity:
+          tendency: null
+          confidence: null
+
+      syntactic_patterns:
+
+        sentence_length:
+          tendency: null
+          confidence: null
+
+        clause_density:
+          tendency: null
+          confidence: null
+
+        fragmentation:
+          tendency: null
+          confidence: null
+
+        coordination_vs_subordination:
+          tendency: null
+          confidence: null
+
+        question_forms: []
+
+        imperative_forms: []
+
+        declarative_patterns: []
+
+        parenthetical_structure: []
+
+        syntactic_compression_patterns: []
+
+      cadence_patterns:
+
+        rhythm_notes: []
+
+        compression_patterns: []
+
+        elaboration_patterns: []
+
+        pause_or_break_patterns: []
+
+        emphasis_patterns: []
+
+        repetition_patterns: []
+
+        acceleration_patterns: []
+
+        sentence_sequence_patterns: []
+
+      orthographic_patterns:
+
+        capitalization: []
+
+        punctuation: []
+
+        emoji_use: []
+
+        parenthetical_use: []
+
+        dash_use: []
+
+        ellipsis_use: []
+
+        line_break_patterns: []
+
+        emphasis_marking: []
+
+        quotation_patterns: []
+
+      discourse_markers:
+
+        openings: []
+
+        transitions: []
+
+        softeners: []
+
+        intensifiers: []
+
+        repair_markers: []
+
+        stance_markers: []
+
+        agreement_markers: []
+
+        disagreement_markers: []
+
+        topic_shift_markers: []
+
+        closings: []
+
+      explicitness_patterns:
+
+        directness:
+          tendency: null
+          confidence: null
+
+        implication_vs_explication:
+          tendency: null
+          confidence: null
+
+        compression:
+          tendency: null
+          confidence: null
+
+        contextual_reliance:
+          tendency: null
+          confidence: null
+
+        redundancy_tolerance:
+          tendency: null
+          confidence: null
+
+      rhetorical_behavior:
+
+        preferred_argument_sequences: []
+
+        preferred_explanation_sequences: []
+
+        common_compression_moves: []
+
+        common_expansion_moves: []
+
+        analogy_patterns: []
+
+        contrast_patterns: []
+
+        narrative_patterns: []
+
+        qualification_patterns: []
+
+      repair_behavior:
+
+        self_corrections: []
+
+        rejected_wording_patterns: []
+
+        semantic_narrowing: []
+
+        semantic_strengthening: []
+
+        clarification_patterns: []
+
+        "not_x_but_y"_patterns: []
+
+        prior_successful_repairs: []
+
+
+    idiolect_model:
+
+      recurring_features: []
+
+      stable_features: []
+
+      context_sensitive_features: []
+
+      low_confidence_features: []
+
+      contradicted_features: []
+
+      evidence_events: []
+
+      scope:
+
+        task: []
+
+        domain: []
+
+        relationship: []
+
+        discourse_community: []
+
+        cross_context: []
+
+      model_status:
+
+        confidence: null
+
+        human_confirmed: false
+
+        last_updated_from_event: null
+
+
+    local_semantics:
+
+      vocabulary:
+
+        - form: null
+
+          local_meaning: null
+
+          literal_or_general_meaning: null
+
+          pragmatic_function: null
+
+          source_events: []
+
+          confidence: null
+
+          scope: null
+          # task
+          # relationship
+          # discourse_community
+          # domain
+
+      semantic_distinctions: []
+
+      shared_conceptual_shorthand: []
+
+      relational_shorthand: []
+
+      recurring_metaphors: []
+
+      internally_defined_terms: []
+
+      semantic_drift_risks: []
+
 
     register:
+
       current: null
+
+      candidate_registers: []
+
+      evidence_events: []
+
       confidence: null
 
-    discourse_communities: []
+      shift_conditions: []
 
-    pragmatic_patterns: []
+      role_dependencies: []
+
+      audience_dependencies: []
+
+      medium_dependencies: []
+
 
     stance:
+
       current: []
+
+      candidate_stances: []
+
+      evidence_events: []
+
       confidence: null
 
-    humor_patterns: []
+      dimensions:
 
-    irony_patterns: []
+        certainty: null
 
-    mitigation_patterns: []
+        alignment: null
 
-    intensification_patterns: []
+        affect: null
 
-    code_switching_patterns: []
+        authority: null
 
-    role_language: []
+        distance: null
 
-    generational_norms: []
+        evaluation: null
 
-    professional_or_community_language: []
+        commitment: null
 
-    shared_vocabulary: []
+        vulnerability: null
 
-    relational_language_history: []
 
-    repair_history: []
+    pragmatic_patterns:
+
+      implicature_patterns: []
+
+      presupposition_patterns: []
+
+      indirectness_patterns: []
+
+      politeness_patterns: []
+
+      mitigation_patterns: []
+
+      intensification_patterns: []
+
+      deixis_patterns: []
+
+      framing_patterns: []
+
+      repair_patterns: []
+
+      speech_act_patterns: []
+
+      invitation_patterns: []
+
+      refusal_patterns: []
+
+      request_patterns: []
+
+      boundary_patterns: []
+
+      affiliation_patterns: []
+
+      distancing_patterns: []
+
+
+    discourse_communities:
+
+      - community: null
+
+        evidence: []
+
+        confidence: null
+
+        relevant_conventions: []
+
+        terminology: []
+
+        humor_norms: []
+
+        evidence_norms: []
+
+        directness_norms: []
+
+        status_norms: []
+
+        marked_forms: []
+
+        rhetorical_expectations: []
+
+        epistemic_expectations: []
+
+        scope: null
+
+
+    professional_or_community_language:
+
+      terminology: []
+
+      rhetorical_conventions: []
+
+      epistemic_conventions: []
+
+      insider_language: []
+
+      outsider_risk: []
+
+      jargon_density_expectation: null
+
+      citation_or_evidence_expectation: []
+
+      typical_argument_forms: []
+
+
+    role_language:
+
+      speaker_role: null
+
+      audience_role: null
+
+      expected_forms: []
+
+      marked_forms: []
+
+      prohibited_or_high_risk_forms: []
+
+      authority_signals: []
+
+      affiliation_signals: []
+
+      evaluation_signals: []
+
+      deference_signals: []
+
+      peer_positioning_signals: []
+
+      role_distance_signals: []
+
+
+    humor_model:
+
+      observed_forms: []
+
+      candidate_forms: []
+
+      successful_forms: []
+
+      failed_forms: []
+
+      context_dependencies: []
+
+      audience_dependencies: []
+
+      role_dependencies: []
+
+      face_risk: null
+
+      current_permission: unknown
+      # allowed
+      # conditional
+      # unsupported
+      # prohibited
+      # unknown
+
+      confidence: null
+
+
+    irony_model:
+
+      observed_patterns: []
+
+      candidate_interpretations: []
+
+      likely_interpretation: null
+
+      audience_legibility: null
+
+      current_permission: unknown
+
+      confidence: null
+
+
+    code_switching:
+
+      observed_patterns: []
+
+      trigger_contexts: []
+
+      audience_dependencies: []
+
+      role_dependencies: []
+
+      discourse_community_dependencies: []
+
+      function_hypotheses: []
+
+      confidence: null
+
+
+    generational_or_cohort_norms:
+
+      # Broad cohort evidence may help generate hypotheses.
+      #
+      # It should not override stronger person-specific evidence.
+
+      candidate_norms: []
+
+      evidence_basis: []
+
+      confidence: null
+
+      person_specific_override: []
+
+      stereotype_risk: []
+
+
+    relational_language_history:
+
+      shared_vocabulary: []
+
+      callbacks: []
+
+      nicknames_or_address_forms: []
+
+      recurring_metaphors: []
+
+      established_humor: []
+
+      intimacy_markers: []
+
+      distancing_markers: []
+
+      prior_successful_realizations: []
+
+      prior_failed_realizations: []
+
+      prior_semantic_repairs: []
+
+      repair_history: []
+
+      permission_changes: []
+
+
+    interactional_language_permissions:
+
+      # A form can be understood perfectly while remaining inappropriate
+      # for the system or speaker to perform.
+
+      - form_or_feature: null
+
+        comprehension_supported: null
+
+        production_permission: unknown
+        # allowed
+        # conditional
+        # unsupported
+        # prohibited
+        # unknown
+
+        evidence_events: []
+
+        context_constraints: []
+
+        role_constraints: []
+
+        audience_constraints: []
+
+        relationship_constraints: []
+
+        confidence: null
+
+
+    sociolinguistic_inference:
+
+      observed: []
+
+      inferred: []
+
+      hypothesized: []
+
+      human_confirmed: []
+
+      human_rejected: []
+
+      uncertainty: []
+
+      stereotype_risk_flags: []
+
+      identity_inference_avoided: []
+
 
     semantic_uncertainty: []
+
+
+    realization_constraints:
+
+      preserve: []
+
+      avoid: []
+
+      preferred_features: []
+
+      dispreferred_features: []
+
+      prohibited_mimicry: []
+
+      audience_fit_constraints: []
+
+      speaker_authenticity_constraints: []
+
+      role_constraints: []
+
+      power_constraints: []
+
+      medium_constraints: []
+
+
+    model_status:
+
+      confidence: null
+
+      last_updated_from_event: null
+
+      human_corrections: []
 
 
   # ============================================================
