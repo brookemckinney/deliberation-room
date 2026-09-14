@@ -1,0 +1,284 @@
+schema_version: "0.1"
+
+interaction_state:
+
+  session:
+    id: null
+    task_id: null
+    timestamp: null
+
+  goal:
+    description: null
+    source: null
+    confidence: null
+    status: active
+
+  cognitive_state:
+
+    observations: []
+
+    claims: []
+
+    assumptions: []
+
+    warrants: []
+
+    evidence:
+      supporting: []
+      conflicting: []
+      unresolved: []
+
+    distinctions: []
+
+    contradictions: []
+
+    counterexamples: []
+
+    alternatives: []
+
+    unresolved_questions: []
+
+    uncertainty: []
+
+    conceptual_stability:
+      status: unknown
+      confidence: null
+      rationale: []
+      tested_against: []
+
+  person_reasoning_model:
+
+    domain_expertise: []
+
+    prior_knowledge: []
+
+    productive_reasoning_patterns: []
+
+    representation_preferences: []
+
+    abstraction_preferences: []
+
+    challenge_preferences: []
+
+    scaffolding_preferences: []
+
+    revision_patterns: []
+
+    evidence_use_patterns: []
+
+    uncertainty_patterns: []
+
+    metacognitive_observations: []
+
+  linguistic_sociolinguistic_model:
+
+    idiolect_features: []
+
+    local_vocabulary: []
+
+    semantic_distinctions: []
+
+    register:
+      current: null
+      confidence: null
+
+    discourse_communities: []
+
+    pragmatic_patterns: []
+
+    stance:
+      current: []
+      confidence: null
+
+    humor_patterns: []
+
+    irony_patterns: []
+
+    mitigation_patterns: []
+
+    intensification_patterns: []
+
+    code_switching_patterns: []
+
+    role_language: []
+
+    generational_norms: []
+
+    professional_or_community_language: []
+
+    shared_vocabulary: []
+
+    relational_language_history: []
+
+    repair_history: []
+
+    semantic_uncertainty: []
+
+  interaction_model:
+
+    participants: []
+
+    roles: []
+
+    institutional_roles: []
+
+    power_relations: []
+
+    status_relations: []
+
+    familiarity:
+      level: unknown
+      confidence: null
+
+    relational_distance:
+      level: unknown
+      confidence: null
+
+    relationship_history: []
+
+    trust_signals: []
+
+    face_considerations: []
+
+    belonging_considerations: []
+
+    audience: []
+
+    setting: null
+
+    stakes:
+      level: unknown
+      dimensions: []
+
+    topic_sensitivity: []
+
+    disclosure_risk:
+      level: unknown
+      factors: []
+
+    disclosure_pressure:
+      level: unknown
+      factors: []
+
+    interactional_permissions: []
+
+    interactional_obligations: []
+
+    response_latitude:
+      level: unknown
+      rationale: []
+
+    asymmetry_of_consequence: []
+
+    asymmetry_of_knowledge: []
+
+    evaluation_risk: []
+
+    vulnerability_factors: []
+
+    ability_to_disengage:
+      level: unknown
+      constraints: []
+
+  epistemic_status:
+
+    observed: []
+
+    inferred: []
+
+    hypothesized: []
+
+    user_confirmed: []
+
+    contradicted: []
+
+    unknown: []
+
+  provenance:
+
+    conceptual_events: []
+
+    linguistic_events: []
+
+    external_sources: []
+
+  current_policy_state:
+
+    candidate_moves: []
+
+    selected_move:
+      action: null
+      rationale: null
+
+      expected_cognitive_value: null
+      expected_information_gain: null
+      agency_preservation: null
+      response_latitude: null
+      correctability: null
+
+      cognitive_substitution_risk: null
+      intrusion_cost: null
+      disclosure_pressure: null
+      interactional_risk: null
+      premature_certainty_risk: null
+
+    joint_move:
+      cognitive_function: null
+      linguistic_realization: null
+      interactional_affordance: []
+
+  composition_state:
+
+    mode: deliberation
+
+    readiness:
+      status: unknown
+      rationale: []
+
+    explicit_human_request: false
+
+    semantic_invariants: []
+
+    rhetorical_constraints: []
+
+    permitted_transformations: []
+
+    prohibited_substantive_additions: []
+
+    semantic_drift_flags: []
+
+  persistence:
+
+    turn_level: []
+
+    session_level: []
+
+    task_level: []
+
+    domain_level: []
+
+    cross_domain: []
+
+    persistent: []
+
+  model_uncertainty:
+
+    unresolved_inferences: []
+
+    conflicting_evidence: []
+
+    low_confidence_representations: []
+
+    correction_needed: []
+
+  user_correction:
+
+    pending: false
+
+    corrected_elements: []
+
+    rejected_inferences: []
+
+    narrowed_generalizations: []
+
+    deleted_representations: []
