@@ -595,7 +595,9 @@ The relevant empirical question is:
 
 ---
 
-## Research Hypotheses
+## Headline Research Hypotheses
+
+The six hypotheses below summarize the project's highest-level empirical claims. The full research program currently specifies 18 testable hypotheses, including operationalizations and potential falsification criteria; see [research/hypotheses.md](research/hypotheses.md).
 
 Deliberation Room should currently be understood as an interaction architecture and research program.
 
