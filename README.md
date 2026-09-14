@@ -105,7 +105,38 @@ The four models are analytically distinguishable but interactionally dependent.
 A cognitive move cannot always be evaluated independently of the language through which it is realized, the social meaning of that language, the relationship between participants, or the human's established reasoning practices.
 
 ---
+## Start Here
 
+Deliberation Room is specified across several layers. Readers can enter the project according to what they want to inspect.
+
+| If you want to understand... | Start with |
+|---|---|
+| The project's governing commitments | [Governing Principles](GOVERNING_PRINCIPLES.md) |
+| The four interacting models | [Architecture](architecture/) |
+| How the system chooses what to do next | [Next-Move Policy](architecture/next-move-policy.md) |
+| How human and system contributions are distinguished | [Provenance](architecture/provenance.md) |
+| The provisional state representations | [Schemas](schemas/) |
+| Concrete interaction traces | [Examples](examples/) |
+| The research claims to be tested | [Research Hypotheses](research/hypotheses.md) |
+| How the architecture could be evaluated | [Evaluation](research/evaluation.md) |
+| Privacy and misuse risks | [Threat Model](research/threat-model.md) |
+| Relevant intellectual and technical precedents | [Related Work](research/related-work.md) |
+| Educational applications | [Education](applications/education.md) |
+| Deliberation before communication | [Communication](applications/communication.md) |
+| Social and relational move selection | [Relational Interaction](applications/relational-interaction.md) |
+| Project-specific terminology | [Glossary](GLOSSARY.md) |
+
+### How the application files differ
+
+The application documents are related but intentionally distinct:
+
+- **Education** asks how AI can support learning without silently replacing the cognition an assessment is intended to develop or evidence.
+- **Communication** asks how a human can stabilize what they mean before rhetorically transposing that judgment for an audience.
+- **Relational Interaction** asks what a communicative move *does* within a particular relationship, role, power structure, discourse environment, and moment.
+
+The architecture is not presented as empirically validated. The files above distinguish architectural commitments, implementation proposals, research hypotheses, and evaluation questions wherever possible.
+
+---
 ## The Four Models
 
 ### 1. Cognitive State Model
