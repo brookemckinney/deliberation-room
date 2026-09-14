@@ -100,17 +100,24 @@ def choose_stability() -> Stability:
 
 
 def add_human_claim(state: DeliberationState) -> None:
-    """Record the initial human-originated claim."""
+    """Record the human's initial unfinished thought.
 
-    claim = prompt_nonempty("\nCurrent claim: ")
-    state.record_human_claim(claim)
+    The current prototype stores this in the claim field internally,
+    but the user does not need to formulate or classify it as a claim.
+    """
 
+    starting_thought = prompt_nonempty(
+        "\nWhat's the thing you're trying to figure out, decide, understand, "
+        "write, or say?\n> "
+    )
+
+    state.record_human_claim(starting_thought)
 
 def add_optional_assumption(state: DeliberationState) -> None:
     """Optionally record an assumption already visible to the human."""
 
     if not yes_no(
-        "Is there an assumption you want the controller to inspect?"
+        "Is there something you're already assuming might be true?"
     ):
         return
 
@@ -140,7 +147,7 @@ def add_optional_contradiction(state: DeliberationState) -> None:
     """Optionally record an already-visible contradiction."""
 
     if not yes_no(
-        "Is there a contradiction or tension already visible?"
+        "Is there any tension, conflict, or part that doesn't quite fit yet?"
     ):
         return
 
@@ -173,7 +180,7 @@ def add_optional_unresolved_question(
 ) -> None:
     """Optionally record an unresolved question."""
 
-    if not yes_no("Is there a specific unresolved question?"):
+    if not yes_no("Is there a question you keep circling or can't answer yet?"):
         return
 
     question = prompt_nonempty("Unresolved question: ")
@@ -201,7 +208,7 @@ def add_optional_unresolved_question(
 def add_optional_uncertainty(state: DeliberationState) -> None:
     """Optionally record uncertainty that should remain explicit."""
 
-    if not yes_no("Is there uncertainty you want to preserve?"):
+    if not yes_no("Is there anything you genuinely don't know yet and don't want the system to pretend you know?"):
         return
 
     uncertainty = prompt_nonempty("Uncertainty: ")
@@ -232,9 +239,9 @@ def collect_initial_state() -> DeliberationState:
     state = DeliberationState()
 
     print("\n=== Deliberation Room: Minimal Prototype ===")
-    print(
-        "\nThis demo asks you to expose a small amount of reasoning state "
-        "so the controller's decisions remain inspectable."
+     print(
+    "\nBring an unfinished thought, tension, question, decision, interpretation, "
+    "or something you need to say. You do not need to turn it into a claim first."
     )
 
     add_human_claim(state)
@@ -246,8 +253,7 @@ def collect_initial_state() -> DeliberationState:
     state.cognitive.conceptual_stability = choose_stability()
 
     state.composition_requested = yes_no(
-        "\nDo you want to move directly to composition?"
-    )
+    "\nDo you already know what you mean and just want help turning it into the exact thing to write or say?"    )
 
     return state
 
