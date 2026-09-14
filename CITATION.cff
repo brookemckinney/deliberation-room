@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use or reference Deliberation Room, please cite it as below."
+
+title: "Deliberation Room: A Cognition-Preserving Interaction Architecture for AI Systems"
+
+type: software
+
+authors:
+  - family-names: "McKinney"
+    given-names: "Brooke"
+
+abstract: >-
+  Deliberation Room is an exploratory interaction architecture and research
+  specification for AI systems that optimize for what the human should be
+  able to do next rather than only what the model should say next. The
+  architecture models cognitive state, person-specific reasoning patterns,
+  linguistic and sociolinguistic meaning, and interactional context to
+  support adaptive next-move selection while preserving human cognitive
+  agency. The project also explores cognitive provenance, rhetorical
+  transposition, data-minimized personalization, and domain-specific
+  applications.
+
+repository-code: "https://github.com/brookemckinney/deliberation-room"
+
+url: "https://github.com/brookemckinney/deliberation-room"
+
+license: MIT
+
+keywords:
+  - human-AI interaction
+  - cognitive agency
+  - cognitive provenance
+  - deliberation
+  - interaction architecture
+  - next-move policy
+  - human-centered AI
+  - sociolinguistics
+  - metacognition
+  - AI-assisted learning
