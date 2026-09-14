@@ -7,7 +7,7 @@ The first prototype does not yet use an LLM. The purpose of this interface
 is to make extraction behavior explicit before any model is introduced.
 
 Core rule:
-
+z
     WHAT THE HUMAN LITERALLY SAID
         !=
     WHAT THE SYSTEM INFERS FROM IT
@@ -75,6 +75,10 @@ class ExtractionResult:
     raw_text: str
 
     candidates: List[ExtractionCandidate] = field(
+        default_factory=list
+    )
+
+    pending_confirmation: List[ExtractionCandidate] = field(
         default_factory=list
     )
 
@@ -163,16 +167,34 @@ class ManualStateExtractor(StateExtractor):
 def apply_extraction(
     state: DeliberationState,
     result: ExtractionResult,
-) -> None:
-    """Apply extraction candidates to active state.
+) -> ExtractionResult:
+    """Apply only directly observed state.
 
-    This helper intentionally applies only a minimal mapping.
+    System-inferred or system-proposed candidates should not enter active
+    cognitive state until a human confirmation gate has reviewed them.
 
-    It should not silently promote inferred content into human-confirmed
-    content.
+    The returned ExtractionResult preserves those candidates in
+    `pending_confirmation`.
     """
 
+    active_candidates = []
+    pending_candidates = []
+
     for candidate in result.candidates:
+        requires_confirmation = (
+            candidate.epistemic_status
+            in {
+                EpistemicStatus.SYSTEM_INFERRED,
+                EpistemicStatus.SYSTEM_PROPOSED,
+            }
+            or candidate.provenance
+            == Provenance.SYSTEM_PROPOSED
+        )
+
+        if requires_confirmation:
+            pending_candidates.append(candidate)
+            continue
+
         obj = CognitiveObject(
             content=candidate.content,
             epistemic_status=candidate.epistemic_status,
@@ -197,3 +219,16 @@ def apply_extraction(
 
         elif candidate.extraction_type == ExtractionType.UNCERTAINTY:
             state.cognitive.uncertainty.append(obj)
+
+        active_candidates.append(candidate)
+
+    result.candidates = active_candidates
+    result.pending_confirmation.extend(
+        pending_candidates
+    )
+
+    result.requires_human_confirmation = bool(
+        result.pending_confirmation
+    )
+
+    return result
