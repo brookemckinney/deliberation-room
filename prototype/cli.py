@@ -34,6 +34,18 @@ from state import (
 )
 from updater import StateUpdater
 
+from confirmation import (
+    ConfirmationDecision,
+    ConfirmationGate,
+)
+from extractor import (
+    ExtractionCandidate,
+    ExtractionResult,
+    ExtractionType,
+    ManualStateExtractor,
+    apply_extraction,
+)
+
 
 def prompt_nonempty(label: str) -> str:
     """Prompt until the user enters non-empty text."""
@@ -393,10 +405,9 @@ def apply_human_update(
     updater: StateUpdater,
     system_action: Action,
     system_event_id: int,
+    response_text: str,
 ) -> None:
     """Collect a human response and apply an explicit state update."""
-
-    response_text = prompt_nonempty("\nYou: ")
 
     response_type = choose_response_type()
 
@@ -484,15 +495,103 @@ def apply_human_update(
 
     state.next_turn()
 
+def review_pending_extractions(
+    state: DeliberationState,
+    gate: ConfirmationGate,
+    pending: list[ExtractionCandidate],
+) -> None:
+    """Let the human review system-inferred state before policy can use it."""
+
+    for candidate in pending:
+        print("\n=== Pending System Inference ===")
+        print(f"Type: {candidate.extraction_type.value}")
+        print(f"Source text: {candidate.source_text}")
+        print(f"System interpretation: {candidate.content}")
+
+        if candidate.rationale:
+            print(f"Rationale: {candidate.rationale}")
+
+        if candidate.confidence is not None:
+            print(f"Confidence: {candidate.confidence}")
+
+        print("\nChoose:")
+        print("1. Confirm")
+        print("2. Revise")
+        print("3. Reject")
+
+        while True:
+            choice = input("Choose 1-3: ").strip()
+
+            if choice == "1":
+                gate.confirm(
+                    state=state,
+                    candidate=candidate,
+                )
+                break
+
+            if choice == "2":
+                revised = prompt_nonempty(
+                    "State the corrected interpretation: "
+                )
+
+                gate.revise(
+                    state=state,
+                    candidate=candidate,
+                    revised_content=revised,
+                )
+                break
+
+            if choice == "3":
+                explanation = input(
+                    "Optional explanation of what is wrong: "
+                ).strip()
+
+                gate.reject(
+                    state=state,
+                    candidate=candidate,
+                    explanation=explanation or None,
+                )
+                break
+
+            print("Please choose 1, 2, or 3.")
+
+def extract_and_review_human_input(
+    state: DeliberationState,
+    text: str,
+    extractor: ManualStateExtractor,
+    gate: ConfirmationGate,
+) -> ExtractionResult:
+    """Extract candidate state and gate any inferred representations."""
+
+    result = extractor.extract(
+        text=text,
+        state=state,
+    )
+
+    updated = apply_extraction(
+        state=state,
+        result=result,
+    )
+
+    if updated.pending_confirmation:
+        review_pending_extractions(
+            state=state,
+            gate=gate,
+            pending=updated.pending_confirmation,
+        )
+
+    return updated
 
 def run_deliberation() -> None:
     """Run the multi-turn Deliberation Room loop."""
 
     state = collect_initial_state()
-
-    controller = NextMoveController()
-    realizer = MoveRealizer()
-    updater = StateUpdater()
+    
+controller = NextMoveController()
+realizer = MoveRealizer()
+updater = StateUpdater()
+extractor = ManualStateExtractor()
+confirmation_gate = ConfirmationGate()
 
     while not state.deliberation_complete:
         print_state_summary(state)
@@ -548,12 +647,22 @@ def run_deliberation() -> None:
             state.next_turn()
             continue
 
-        apply_human_update(
-            state=state,
-            updater=updater,
-            system_action=selected.action,
-            system_event_id=system_event_id,
-        )
+        human_text = prompt_nonempty("\nYou: ")
+
+extract_and_review_human_input(
+    state=state,
+    text=human_text,
+    extractor=extractor,
+    gate=confirmation_gate,
+)
+
+    apply_human_update(
+    state=state,
+    updater=updater,
+    system_action=selected.action,
+    system_event_id=system_event_id,
+    response_text=human_text,
+)
 
         if yes_no(
             "\nAre you done deliberating?"
