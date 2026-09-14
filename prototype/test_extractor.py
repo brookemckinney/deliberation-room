@@ -107,11 +107,12 @@ def test_empty_input_produces_no_candidate():
     )
 
     assert result.candidates == []
+    assert result.pending_confirmation == []
     assert result.requires_human_confirmation is False
 
 
-def test_apply_extraction_adds_claim_to_state():
-    """A claim extraction should enter the active claim state."""
+def test_apply_extraction_adds_observed_claim_to_active_state():
+    """Observed human content should enter active cognitive state."""
 
     state = DeliberationState()
 
@@ -129,7 +130,7 @@ def test_apply_extraction_adds_claim_to_state():
         ],
     )
 
-    apply_extraction(
+    updated = apply_extraction(
         state=state,
         result=result,
     )
@@ -148,85 +149,111 @@ def test_apply_extraction_adds_claim_to_state():
         == Provenance.HUMAN_ORIGINATED
     )
 
+    assert len(updated.candidates) == 1
+    assert updated.pending_confirmation == []
+    assert updated.requires_human_confirmation is False
 
-def test_apply_extraction_preserves_inferred_status():
-    """System inference must not be promoted into human confirmation."""
+
+def test_inferred_assumption_stays_pending():
+    """System inference should not enter active cognitive state."""
 
     state = DeliberationState()
 
-    result = ExtractionResult(
-        raw_text="I don't know if the law is really the problem.",
-        candidates=[
-            ExtractionCandidate(
-                extraction_type=ExtractionType.ASSUMPTION,
-                content=(
-                    "The current interpretation may depend on treating "
-                    "the moral quality of the law as the central variable."
-                ),
-                source_text=(
-                    "I don't know if the law is really the problem."
-                ),
-                epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
-                provenance=Provenance.SYSTEM_PROPOSED,
-                confidence=0.55,
-                rationale="Candidate inference for inspection.",
-            )
-        ],
-        requires_human_confirmation=True,
+    inferred = ExtractionCandidate(
+        extraction_type=ExtractionType.ASSUMPTION,
+        content=(
+            "The current interpretation may depend on treating "
+            "the moral quality of the law as the central variable."
+        ),
+        source_text=(
+            "I don't know if the law is really the problem."
+        ),
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.55,
+        rationale="Candidate inference for inspection.",
     )
 
-    apply_extraction(
+    result = ExtractionResult(
+        raw_text=(
+            "I don't know if the law is really the problem."
+        ),
+        candidates=[inferred],
+    )
+
+    updated = apply_extraction(
         state=state,
         result=result,
     )
 
-    assumption = state.cognitive.assumptions[0]
-
-    assert (
-        assumption.epistemic_status
-        == EpistemicStatus.SYSTEM_INFERRED
-    )
-
-    assert (
-        assumption.provenance
-        == Provenance.SYSTEM_PROPOSED
-    )
+    assert state.cognitive.assumptions == []
+    assert updated.candidates == []
+    assert len(updated.pending_confirmation) == 1
+    assert updated.pending_confirmation[0] == inferred
+    assert updated.requires_human_confirmation is True
 
 
-def test_apply_extraction_routes_uncertainty_correctly():
-    """Uncertainty candidates should enter the uncertainty state."""
+def test_inferred_claim_stays_pending():
+    """System-proposed claims should require review before policy can use them."""
 
     state = DeliberationState()
 
-    result = ExtractionResult(
-        raw_text="I'm not sure whether that conclusion generalizes.",
-        candidates=[
-            ExtractionCandidate(
-                extraction_type=ExtractionType.UNCERTAINTY,
-                content=(
-                    "Whether the conclusion generalizes beyond this case."
-                ),
-                source_text=(
-                    "I'm not sure whether that conclusion generalizes."
-                ),
-                epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
-                provenance=Provenance.SYSTEM_PROPOSED,
-                confidence=0.8,
-            )
-        ],
+    inferred = ExtractionCandidate(
+        extraction_type=ExtractionType.CLAIM,
+        content="The deeper issue may be authority rather than law.",
+        source_text="Maybe it isn't really about the law.",
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.65,
     )
 
-    apply_extraction(
+    result = ExtractionResult(
+        raw_text="Maybe it isn't really about the law.",
+        candidates=[inferred],
+    )
+
+    updated = apply_extraction(
         state=state,
         result=result,
     )
 
-    assert len(state.cognitive.uncertainty) == 1
+    assert state.cognitive.current_claims == []
+    assert len(updated.pending_confirmation) == 1
+    assert updated.requires_human_confirmation is True
 
-    assert (
-        state.cognitive.uncertainty[0].content
-        == "Whether the conclusion generalizes beyond this case."
+
+def test_inferred_uncertainty_stays_pending():
+    """Inferred uncertainty should not be silently treated as human uncertainty."""
+
+    state = DeliberationState()
+
+    inferred = ExtractionCandidate(
+        extraction_type=ExtractionType.UNCERTAINTY,
+        content=(
+            "Whether the conclusion generalizes beyond this case."
+        ),
+        source_text=(
+            "I'm not sure whether that conclusion generalizes."
+        ),
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.8,
     )
+
+    result = ExtractionResult(
+        raw_text=(
+            "I'm not sure whether that conclusion generalizes."
+        ),
+        candidates=[inferred],
+    )
+
+    updated = apply_extraction(
+        state=state,
+        result=result,
+    )
+
+    assert state.cognitive.uncertainty == []
+    assert len(updated.pending_confirmation) == 1
 
 
 def test_inferred_candidate_keeps_source_text():
@@ -251,16 +278,117 @@ def test_inferred_candidate_keeps_source_text():
     )
 
 
-def test_extraction_can_require_human_confirmation():
-    """Ambiguous inferred state should be able to require confirmation."""
+def test_mixed_extraction_routes_observed_and_inferred_differently():
+    """Observed content should activate while inferred content waits."""
+
+    state = DeliberationState()
+
+    observed = ExtractionCandidate(
+        extraction_type=ExtractionType.CLAIM,
+        content="I think the law matters.",
+        source_text="I think the law matters.",
+        epistemic_status=EpistemicStatus.OBSERVED,
+        provenance=Provenance.HUMAN_ORIGINATED,
+        confidence=1.0,
+    )
+
+    inferred = ExtractionCandidate(
+        extraction_type=ExtractionType.ASSUMPTION,
+        content=(
+            "The claim may assume the moral quality of the law "
+            "is the decisive variable."
+        ),
+        source_text="I think the law matters.",
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.5,
+    )
 
     result = ExtractionResult(
-        raw_text="Maybe it's not really about the law.",
-        candidates=[],
-        requires_human_confirmation=True,
-        extraction_notes=[
-            "Potential distinction requires human confirmation."
+        raw_text="I think the law matters.",
+        candidates=[
+            observed,
+            inferred,
         ],
     )
 
-    assert result.requires_human_confirmation is True
+    updated = apply_extraction(
+        state=state,
+        result=result,
+    )
+
+    assert len(state.cognitive.current_claims) == 1
+    assert state.cognitive.assumptions == []
+
+    assert len(updated.candidates) == 1
+    assert updated.candidates[0] == observed
+
+    assert len(updated.pending_confirmation) == 1
+    assert updated.pending_confirmation[0] == inferred
+
+
+def test_pending_confirmation_sets_confirmation_flag():
+    """Any pending inferred candidate should raise the review flag."""
+
+    state = DeliberationState()
+
+    inferred = ExtractionCandidate(
+        extraction_type=ExtractionType.UNRESOLVED_QUESTION,
+        content="What does 'dramatic' mean here?",
+        source_text="Every version sounds dramatic.",
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.7,
+    )
+
+    result = ExtractionResult(
+        raw_text="Every version sounds dramatic.",
+        candidates=[inferred],
+    )
+
+    updated = apply_extraction(
+        state=state,
+        result=result,
+    )
+
+    assert updated.requires_human_confirmation is True
+
+
+def test_existing_pending_candidates_are_preserved():
+    """Applying extraction should not discard already-pending review items."""
+
+    state = DeliberationState()
+
+    pending = ExtractionCandidate(
+        extraction_type=ExtractionType.ASSUMPTION,
+        content="Existing pending inference.",
+        source_text="Earlier human language.",
+        epistemic_status=EpistemicStatus.SYSTEM_INFERRED,
+        provenance=Provenance.SYSTEM_PROPOSED,
+        confidence=0.5,
+    )
+
+    observed = ExtractionCandidate(
+        extraction_type=ExtractionType.CLAIM,
+        content="New observed claim.",
+        source_text="New observed claim.",
+        epistemic_status=EpistemicStatus.OBSERVED,
+        provenance=Provenance.HUMAN_ORIGINATED,
+        confidence=1.0,
+    )
+
+    result = ExtractionResult(
+        raw_text="New observed claim.",
+        candidates=[observed],
+        pending_confirmation=[pending],
+        requires_human_confirmation=True,
+    )
+
+    updated = apply_extraction(
+        state=state,
+        result=result,
+    )
+
+    assert len(updated.pending_confirmation) == 1
+    assert updated.pending_confirmation[0] == pending
+    assert updated.requires_human_confirmation is True
