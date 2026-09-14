@@ -1,17 +1,28 @@
-"""Command-line demo for the minimal Deliberation Room prototype.
+"""Multi-turn command-line demo for the Deliberation Room prototype.
 
 Run from the prototype directory:
 
     python cli.py
 
-This demo is intentionally narrow.
+This version implements the actual loop:
 
-It does not infer a rich cognitive state from natural language.
-Instead, it lets a human explicitly enter a small amount of structured
-state so the next-move controller can be inspected before an LLM is added.
+    state
+      ↓
+    select move
+      ↓
+    realize move
+      ↓
+    human responds
+      ↓
+    update state
+      ↺
+
+The prototype still asks the human to classify state changes manually.
+That is deliberate: natural-language state extraction is a separate
+research problem and should not be hidden inside the first controller test.
 """
 
-from controller import NextMoveController
+from controller import Action, NextMoveController
 from realizer import MoveRealizer
 from state import (
     CognitiveObject,
@@ -21,6 +32,7 @@ from state import (
     Stability,
     TraceEvent,
 )
+from updater import StateUpdater
 
 
 def prompt_nonempty(label: str) -> str:
@@ -76,15 +88,14 @@ def choose_stability() -> Stability:
 
 
 def add_human_claim(state: DeliberationState) -> None:
-    """Record a human-originated claim."""
+    """Record the initial human-originated claim."""
 
     claim = prompt_nonempty("\nCurrent claim: ")
-
     state.record_human_claim(claim)
 
 
 def add_optional_assumption(state: DeliberationState) -> None:
-    """Optionally record an assumption currently under inspection."""
+    """Optionally record an assumption already visible to the human."""
 
     if not yes_no(
         "Is there an assumption you want the controller to inspect?"
@@ -114,7 +125,7 @@ def add_optional_assumption(state: DeliberationState) -> None:
 
 
 def add_optional_contradiction(state: DeliberationState) -> None:
-    """Optionally record a contradiction or tension."""
+    """Optionally record an already-visible contradiction."""
 
     if not yes_no(
         "Is there a contradiction or tension already visible?"
@@ -204,14 +215,14 @@ def add_optional_uncertainty(state: DeliberationState) -> None:
 
 
 def collect_initial_state() -> DeliberationState:
-    """Collect the deliberately minimal state used by the prototype."""
+    """Collect the deliberately minimal starting state."""
 
     state = DeliberationState()
 
     print("\n=== Deliberation Room: Minimal Prototype ===")
     print(
-        "\nThis demo asks you to expose a tiny amount of reasoning state "
-        "so the controller's next-move decision can be inspected."
+        "\nThis demo asks you to expose a small amount of reasoning state "
+        "so the controller's decisions remain inspectable."
     )
 
     add_human_claim(state)
@@ -282,58 +293,282 @@ def print_trace(state: DeliberationState) -> None:
     print("\n=== Trace ===")
 
     for index, event in enumerate(state.trace):
+        trigger = (
+            f" triggered_by={event.triggered_by}"
+            if event.triggered_by is not None
+            else ""
+        )
+
         print(
             f"{index}: "
             f"{event.actor} | "
             f"{event.event_type} | "
             f"{event.provenance.value}"
+            f"{trigger}"
         )
         print(f"   {event.content}")
 
 
-def main() -> None:
-    """Run a single inspectable controller turn."""
+def print_state_summary(state: DeliberationState) -> None:
+    """Print the current structured cognitive state."""
+
+    print("\n=== Current State ===")
+
+    print("Claims:")
+    if state.cognitive.current_claims:
+        for item in state.cognitive.current_claims:
+            print(f"  - {item.content}")
+    else:
+        print("  - none")
+
+    print("Assumptions:")
+    if state.cognitive.assumptions:
+        for item in state.cognitive.assumptions:
+            print(f"  - {item.content}")
+    else:
+        print("  - none")
+
+    print("Contradictions:")
+    if state.cognitive.contradictions:
+        for item in state.cognitive.contradictions:
+            print(f"  - {item.content}")
+    else:
+        print("  - none")
+
+    print("Unresolved questions:")
+    if state.cognitive.unresolved_questions:
+        for item in state.cognitive.unresolved_questions:
+            print(f"  - {item.content}")
+    else:
+        print("  - none")
+
+    print("Uncertainty:")
+    if state.cognitive.uncertainty:
+        for item in state.cognitive.uncertainty:
+            print(f"  - {item.content}")
+    else:
+        print("  - none")
+
+    print(
+        "Conceptual stability: "
+        f"{state.cognitive.conceptual_stability.value}"
+    )
+
+
+def choose_response_type() -> str:
+    """Ask the human what kind of cognitive event occurred."""
+
+    options = {
+        "1": "response_only",
+        "2": "new_claim",
+        "3": "revision",
+        "4": "distinction",
+        "5": "new_assumption",
+        "6": "new_uncertainty",
+        "7": "rejection",
+        "8": "no_change",
+    }
+
+    print("\nWhat happened cognitively?")
+    print("1. response only / not sure yet")
+    print("2. I formed a new claim")
+    print("3. I revised my current claim")
+    print("4. I made a distinction")
+    print("5. I identified an assumption")
+    print("6. I identified uncertainty")
+    print("7. I reject the system's framing or move")
+    print("8. No meaningful state change")
+
+    while True:
+        choice = input("Choose 1-8: ").strip()
+
+        if choice in options:
+            return options[choice]
+
+        print("Please choose a number from 1 to 8.")
+
+
+def apply_human_update(
+    state: DeliberationState,
+    updater: StateUpdater,
+    system_action: Action,
+    system_event_id: int,
+) -> None:
+    """Collect a human response and apply an explicit state update."""
+
+    response_text = prompt_nonempty("\nYou: ")
+
+    response_type = choose_response_type()
+
+    updater.record_human_response(
+        state=state,
+        system_action=system_action,
+        system_event_id=system_event_id,
+        response_text=response_text,
+        response_type=response_type,
+    )
+
+    if response_type == "new_claim":
+        updater.add_human_claim(
+            state=state,
+            content=prompt_nonempty(
+                "State the new claim clearly: "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    elif response_type == "revision":
+        updater.revise_current_claim(
+            state=state,
+            revised_content=prompt_nonempty(
+                "State the revised claim clearly: "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    elif response_type == "distinction":
+        updater.add_human_distinction(
+            state=state,
+            content=prompt_nonempty(
+                "State the distinction clearly: "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    elif response_type == "new_assumption":
+        updater.add_assumption(
+            state=state,
+            content=prompt_nonempty(
+                "State the assumption clearly: "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    elif response_type == "new_uncertainty":
+        updater.add_uncertainty(
+            state=state,
+            content=prompt_nonempty(
+                "State the uncertainty clearly: "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    elif response_type == "rejection":
+        updater.reject_system_move(
+            state=state,
+            explanation=prompt_nonempty(
+                "What did the system get wrong? "
+            ),
+            triggered_by=system_event_id,
+        )
+
+    if yes_no(
+        "\nDid this resolve the most recent assumption?"
+    ):
+        updater.resolve_assumption(state)
+
+    if yes_no(
+        "Did this resolve the most recent contradiction?"
+    ):
+        updater.resolve_contradiction(state)
+
+    if yes_no(
+        "Did this resolve the most recent unresolved question?"
+    ):
+        updater.resolve_question(state)
+
+    updater.set_stability(
+        state,
+        choose_stability(),
+    )
+
+    state.next_turn()
+
+
+def run_deliberation() -> None:
+    """Run the multi-turn Deliberation Room loop."""
 
     state = collect_initial_state()
 
     controller = NextMoveController()
     realizer = MoveRealizer()
+    updater = StateUpdater()
 
-    decision = controller.select_next_move(state)
+    while not state.deliberation_complete:
+        print_state_summary(state)
 
-    print_candidate_moves(decision)
+        decision = controller.select_next_move(state)
 
-    selected = decision.selected
+        print_candidate_moves(decision)
 
-    print("\n=== Selected Move ===")
-    print(selected.action.value.upper())
-    print(selected.rationale)
+        selected = decision.selected
 
-    realized = realizer.realize(
-        selected,
-        state,
-    )
+        print("\n=== Selected Move ===")
+        print(selected.action.value.upper())
+        print(selected.rationale)
 
-    record_system_move(
-        state=state,
-        action=selected.action.value,
-        text=realized.text,
-    )
+        realized = realizer.realize(
+            selected,
+            state,
+        )
 
-    print("\n=== Realization ===")
+        system_event_id = record_system_move(
+            state=state,
+            action=selected.action.value,
+            text=realized.text,
+        )
 
-    if realized.is_silent():
-        print("[WITHHOLD — no user-facing text emitted]")
-    else:
+        print("\n=== System ===")
+
+        if realized.is_silent():
+            print("[WITHHOLD — no user-facing text emitted]")
+
+            if yes_no(
+                "Do you want to continue deliberating anyway?"
+            ):
+                state.next_turn()
+                continue
+
+            state.deliberation_complete = True
+            break
+
         print(realized.text)
 
+        if (
+            selected.action
+            == Action.TRANSITION_TO_COMPOSITION
+        ):
+            state.deliberation_complete = True
+            break
+
+        if yes_no(
+            "\nDo you want the system to compose instead of continuing?"
+        ):
+            state.composition_requested = True
+            state.next_turn()
+            continue
+
+        apply_human_update(
+            state=state,
+            updater=updater,
+            system_action=selected.action,
+            system_event_id=system_event_id,
+        )
+
+        if yes_no(
+            "\nAre you done deliberating?"
+        ):
+            state.deliberation_complete = True
+
+    print("\n=== Deliberation Complete ===")
+    print_state_summary(state)
     print_trace(state)
 
-    print(
-        "\nThis prototype currently stops after one controller decision. "
-        "The next implementation step will update state from the human's "
-        "response and run the policy again."
-    )
+
+def main() -> None:
+    """Entry point."""
+
+    run_deliberation()
 
 
 if __name__ == "__main__":
